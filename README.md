@@ -4,10 +4,12 @@ A full-stack task/project management app (frontend: React, backend: Node/Express
 
 ## Structure
 
+```text
 Root Folder/
 ├── client/ # React frontend
 ├── server/ # Express backend
 └── README.md # Project overview
+```
 
 ## How to Run
 
