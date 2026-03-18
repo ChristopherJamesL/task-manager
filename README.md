@@ -1,6 +1,6 @@
 # Task Manager
 
-A full-stack task/project management app (frontend: React, backend: Node/Express, database: PostgreSQL/MongoDB).
+A full-stack task/project management app (frontend: React, backend: Node/Express, database: PostgreSQL).
 
 ## Structure
 
