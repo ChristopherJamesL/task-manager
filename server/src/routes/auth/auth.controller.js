@@ -1,5 +1,6 @@
-const pool = require("../../utils/database");
+const pool = require("../../db/database");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const SALT_ROUNDS = 10;
 
@@ -28,7 +29,7 @@ async function register(req, res) {
 
     await client.query("COMMIT");
 
-    res.status(201).json({ user });
+    res.status(201).json({ message: "User created", user });
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("Registration error: ", err);
@@ -51,21 +52,23 @@ async function signIn(req, res) {
     );
 
     const user = result.rows[0];
-    const { id, username, email } = user;
 
     if (!user) return res.status(401).json({ error: "Invalid credentials" });
+
+    const { id, username, email } = user;
 
     const isMatch = await bcrypt.compare(password, user.password_hash);
 
     if (!isMatch) return res.status(401).json({ error: "Invalid credentials" });
 
+    const token = jwt.sign({ userId: id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
     res.status(200).json({
       message: "Login successful",
-      user: {
-        id: id,
-        username: username,
-        email: email,
-      },
+      token,
+      user: { id, username, email },
     });
   } catch (err) {
     console.error("Login error: ", err);
@@ -73,7 +76,29 @@ async function signIn(req, res) {
   }
 }
 
+async function me(req, res) {
+  const userId = req.user.id;
+
+  try {
+    const result = await pool.query(
+      `SELECT * FROM users
+             WHERE users.id = $1`,
+      [userId],
+    );
+
+    const user = result.rows[0];
+
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    res.status(200).json({ user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch user" });
+  }
+}
+
 module.exports = {
   register,
   signIn,
+  me,
 };
