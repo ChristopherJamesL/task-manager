@@ -7,8 +7,8 @@ const registerSchema = z.object({
 });
 
 const signInSchema = z.object({
-  identifier: z.string().min(1),
-  password: z.string().min(1),
+  identifier: z.string().min(3),
+  password: z.string().min(3),
 });
 
 function validate(schema) {

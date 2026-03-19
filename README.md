@@ -18,3 +18,21 @@ From the root folder:
 ```bash
 npm run dev
 ```
+
+## API Rules
+
+### Register
+
+- username: min 3 characters
+- email: valid email
+- password: min 3 characters
+
+## SIGN IN
+
+- identifier: min 3 characters
+- password: min 3 characters
+
+### Auth
+
+- JWT used for authentication
+- Token sent via Authorization header: Bearer token
