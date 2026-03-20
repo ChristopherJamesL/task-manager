@@ -12,3 +12,32 @@ CREATE TABLE authentication (
 	CONSTRAINT fk_user_auth
 		FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+CREATE TABLE lists (
+	id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	user_id INTEGER NOT NULL,
+	name VARCHAR(50) NOT NULL,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	
+	CONSTRAINT fk_user_auth
+		FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE tasks (
+	id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	user_id INTEGER NOT NULL,
+	list_id INTEGER NOT NULL,
+	title VARCHAR(255) NOT NULL,
+	description TEXT,
+	is_completed BOOLEAN DEFAULT FALSE,
+	priority VARCHAR(10) DEFAULT 'medium',
+	due_date TIMESTAMP,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+	CONSTRAINT fk_user_auth
+		FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+	CONSTRAINT fk_list_id
+		FOREIGN KEY(list_id) REFERENCES lists(id) ON DELETE SET NULL,
+	CONSTRAINT tasks_priority_check
+		CHECK (priority IN ('low', 'medium', 'high'));
+);
