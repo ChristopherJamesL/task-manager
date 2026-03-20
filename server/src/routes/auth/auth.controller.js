@@ -77,7 +77,7 @@ async function signIn(req, res) {
 }
 
 async function me(req, res) {
-  const userId = req.user.id;
+  const userId = req.user.userId;
 
   try {
     const result = await pool.query(
@@ -97,8 +97,13 @@ async function me(req, res) {
   }
 }
 
+async function logout(req, res) {
+  return res.status(200).json({ message: "Logout successful" });
+}
+
 module.exports = {
   register,
   signIn,
   me,
+  logout,
 };
