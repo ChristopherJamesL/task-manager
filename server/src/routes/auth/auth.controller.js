@@ -1,6 +1,12 @@
 const pool = require("../../db/database");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const {
+  createUser,
+  createAuth,
+  findUserWithPassword,
+  findUserWithId,
+} = require("../../models/auth.model");
 
 const SALT_ROUNDS = 10;
 
@@ -12,20 +18,9 @@ async function register(req, res) {
     await client.query("BEGIN");
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
-    const userResult = await client.query(
-      `INSERT INTO users (username, email) 
-             VALUES ($1, $2)
-             RETURNING id, username, email`,
-      [username, email],
-    );
+    const user = await createUser(client, username, email);
 
-    const user = userResult.rows[0];
-
-    await client.query(
-      `INSERT INTO authentication (user_id, password_hash)
-             VALUES ($1, $2)`,
-      [user.id, hashedPassword],
-    );
+    await createAuth(client, user.id, hashedPassword);
 
     await client.query("COMMIT");
 
@@ -43,15 +38,7 @@ async function signIn(req, res) {
   const { identifier, password } = req.body;
 
   try {
-    const result = await pool.query(
-      `SELECT users.id, users.username, users.email, a.password_hash
-             FROM users
-             JOIN authentication a ON users.id = a.user_id
-             WHERE users.username = $1 OR users.email = $1`,
-      [identifier],
-    );
-
-    const user = result.rows[0];
+    const user = await findUserWithPassword(identifier);
 
     if (!user) return res.status(401).json({ error: "Invalid credentials" });
 
@@ -80,13 +67,7 @@ async function me(req, res) {
   const userId = req.user.userId;
 
   try {
-    const result = await pool.query(
-      `SELECT * FROM users
-             WHERE users.id = $1`,
-      [userId],
-    );
-
-    const user = result.rows[0];
+    const user = await findUserWithId(userId);
 
     if (!user) return res.status(404).json({ error: "User not found" });
 

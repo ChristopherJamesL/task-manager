@@ -1,0 +1,49 @@
+const pool = require("../db/database");
+
+async function createUser(client, username, email) {
+  const result = await client.query(
+    `INSERT INTO users (username, email) 
+     VALUES ($1, $2)
+     RETURNING id, username, email`,
+    [username, email],
+  );
+
+  return result.rows[0];
+}
+
+async function createAuth(client, userId, passwordHash) {
+  const result = await client.query(
+    `INSERT INTO authentication (user_id, password_hash)
+     VALUES ($1, $2)`,
+    [userId, passwordHash],
+  );
+}
+
+async function findUserWithPassword(identifier) {
+  const result = await pool.query(
+    `SELECT users.id, users.username, users.email, a.password_hash
+     FROM users
+     JOIN authentication a ON users.id = a.user_id
+     WHERE users.username = $1 OR users.email = $1`,
+    [identifier],
+  );
+
+  return result.rows[0];
+}
+
+async function findUserWithId(userId) {
+  const result = await pool.query(
+    `SELECT * FROM users
+     WHERE users.id = $1`,
+    [userId],
+  );
+
+  return result.rows[0];
+}
+
+module.exports = {
+  createUser,
+  createAuth,
+  findUserWithPassword,
+  findUserWithId,
+};
