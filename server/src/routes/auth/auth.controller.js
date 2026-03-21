@@ -10,7 +10,7 @@ const {
 
 const SALT_ROUNDS = 10;
 
-async function register(req, res) {
+async function httpRegister(req, res) {
   const { username, email, password } = req.body;
   const client = await pool.connect();
 
@@ -34,7 +34,7 @@ async function register(req, res) {
   }
 }
 
-async function signIn(req, res) {
+async function httpSignIn(req, res) {
   const { identifier, password } = req.body;
 
   try {
@@ -63,7 +63,7 @@ async function signIn(req, res) {
   }
 }
 
-async function me(req, res) {
+async function httpMe(req, res) {
   const userId = req.user.userId;
 
   try {
@@ -78,13 +78,13 @@ async function me(req, res) {
   }
 }
 
-async function logout(req, res) {
+async function httpLogout(req, res) {
   return res.status(200).json({ message: "Logout successful" });
 }
 
 module.exports = {
-  register,
-  signIn,
-  me,
-  logout,
+  httpRegister,
+  httpSignIn,
+  httpMe,
+  httpLogout,
 };

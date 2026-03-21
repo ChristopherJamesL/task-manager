@@ -1,3 +1,5 @@
+-- USERS TABLE
+-- Stores core account identity for authentication and ownership of data
 CREATE TABLE users (
 	id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	username VARCHAR(20) UNIQUE NOT NULL,
@@ -5,6 +7,8 @@ CREATE TABLE users (
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- AUTHENTICATION TABLE
+-- Stores sensitive auth data separately from user profile (security isolation)
 CREATE TABLE authentication (
 	id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	user_id INTEGER UNIQUE NOT NULL,
@@ -13,6 +17,8 @@ CREATE TABLE authentication (
 		FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- LISTS TABLE
+-- Represents task groupings owned by a user (e.g. Work, Personal)
 CREATE TABLE lists (
 	id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	user_id INTEGER NOT NULL,
@@ -23,10 +29,12 @@ CREATE TABLE lists (
 		FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- TASKS TABLE
+-- Core unit of work inside a list
 CREATE TABLE tasks (
 	id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	user_id INTEGER NOT NULL,
-	list_id INTEGER NOT NULL,
+	list_id INTEGER,
 	title VARCHAR(255) NOT NULL,
 	description TEXT,
 	is_completed BOOLEAN DEFAULT FALSE,

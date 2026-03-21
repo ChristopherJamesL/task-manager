@@ -1,14 +1,19 @@
 const express = require("express");
-const { register, signIn, logout, me } = require("./auth.controller");
+const {
+  httpRegister,
+  httpSignIn,
+  httpMe,
+  httpLogout,
+} = require("./auth.controller");
 const requireAuth = require("../../middleware/requireAuth");
 const { registerSchema, signInSchema, validate } = require("./auth.validator");
 
 const authRouter = express.Router();
 
-authRouter.post("/register", validate(registerSchema), register);
-authRouter.post("/signin", validate(signInSchema), signIn);
-authRouter.post("/logout", requireAuth, logout);
+authRouter.post("/register", validate(registerSchema), httpRegister);
+authRouter.post("/signin", validate(signInSchema), httpSignIn);
+authRouter.post("/logout", requireAuth, httpLogout);
 
-authRouter.get("/me", requireAuth, me);
+authRouter.get("/me", requireAuth, httpMe);
 
 module.exports = authRouter;
