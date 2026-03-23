@@ -7,7 +7,13 @@ function requireAuth(req, res, next) {
     if (!authHeader)
       return res.status(401).json({ error: "Authorization header missing" });
 
-    const token = authHeader.split(" ")[1];
+    const parts = authHeader.split(" ");
+
+    if (parts.length !== 2 || parts[0] !== "Bearer") {
+      return res.status(401).json({ error: "Invalid authorization format" });
+    }
+
+    const token = parts[1];
 
     if (!token) return res.status(401).json({ error: "Token missing" });
 

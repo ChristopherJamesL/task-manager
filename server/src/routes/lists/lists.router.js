@@ -11,19 +11,31 @@ const {
   validate,
   createListSchema,
   updateListSchema,
+  listIdParamSchema,
 } = require("./lists.validator");
 
 const listsRouter = express.Router();
 
 listsRouter.get("/", requireAuth, httpGetAllLists);
-listsRouter.get("/:id", requireAuth, httpGetListById);
+listsRouter.get(
+  "/:id",
+  requireAuth,
+  validate(listIdParamSchema, "params"),
+  httpGetListById,
+);
 listsRouter.post("/", requireAuth, validate(createListSchema), httpCreateList);
 listsRouter.patch(
   "/:id",
   requireAuth,
+  validate(listIdParamSchema, "params"),
   validate(updateListSchema),
   httpUpdateListName,
 );
-listsRouter.delete("/:id", requireAuth, httpDeleteList);
+listsRouter.delete(
+  "/:id",
+  requireAuth,
+  validate(listIdParamSchema, "params"),
+  httpDeleteList,
+);
 
 module.exports = listsRouter;

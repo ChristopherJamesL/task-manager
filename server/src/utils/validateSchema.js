@@ -1,6 +1,8 @@
-function validate(schema) {
+function validate(schema, source = "body") {
   return (req, res, next) => {
-    const result = schema.safeParse(req.body);
+    const data = req[source];
+
+    const result = schema.safeParse(data);
 
     if (!result.success) {
       const issue = result.error.issues[0];
@@ -12,7 +14,7 @@ function validate(schema) {
       });
     }
 
-    req.body = result.data;
+    req[source] = result.data;
 
     next();
   };
