@@ -1,6 +1,7 @@
 const pool = require("../../db/database");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { sendSuccess, sendError } = require("../../utils/response");
 const {
   createUser,
   createAuth,
@@ -24,11 +25,14 @@ async function httpRegister(req, res) {
 
     await client.query("COMMIT");
 
-    res.status(201).json({ message: "User created", user });
+    return sendSuccess(res, {
+      data: { user },
+      status: 201,
+    });
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("Registration error: ", err);
-    res.status(500).json({ error: "Registration failed" });
+    return sendError(res, { message: "Registration failed" });
   } finally {
     client.release();
   }
@@ -40,26 +44,33 @@ async function httpSignIn(req, res) {
   try {
     const user = await findUserWithPassword(identifier);
 
-    if (!user) return res.status(401).json({ error: "Invalid credentials" });
+    if (!user)
+      return sendError(res, { message: "Invalid credentials", status: 401 });
 
     const { id, username, email } = user;
 
     const isMatch = await bcrypt.compare(password, user.password_hash);
 
-    if (!isMatch) return res.status(401).json({ error: "Invalid credentials" });
+    if (!isMatch)
+      return sendError(res, { message: "Invalid credentials", status: 401 });
 
     const token = jwt.sign({ userId: id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
 
-    res.status(200).json({
-      message: "Login successful",
-      token,
-      user: { id, username, email },
+    return sendSuccess(res, {
+      data: {
+        token,
+        user: {
+          id,
+          username,
+          email,
+        },
+      },
     });
   } catch (err) {
     console.error("Login error: ", err);
-    res.status(500).json({ error: "Login failed" });
+    return sendError(res, { message: "Login failed" });
   }
 }
 
@@ -69,17 +80,22 @@ async function httpMe(req, res) {
   try {
     const user = await findUserWithId(userId);
 
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user)
+      return sendError(res, { message: "User not found", status: 404 });
 
-    res.status(200).json({ user });
+    return sendSuccess(res, {
+      data: { user },
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to fetch user" });
+    return sendError(res, { message: "Failed to fetch user" });
   }
 }
 
 async function httpLogout(req, res) {
-  return res.status(200).json({ message: "Logout successful" });
+  return sendSuccess(res, {
+    data: { message: "Logged out successfully" },
+  });
 }
 
 module.exports = {

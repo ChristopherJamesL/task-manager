@@ -1,21 +1,29 @@
 const jwt = require("jsonwebtoken");
+const { sendError } = require("../utils/response");
 
 function requireAuth(req, res, next) {
   try {
     const authHeader = req.headers.authorization;
 
     if (!authHeader)
-      return res.status(401).json({ error: "Authorization header missing" });
+      return sendError(res, {
+        message: "Authorization header missing",
+        status: 401,
+      });
 
     const parts = authHeader.split(" ");
 
     if (parts.length !== 2 || parts[0] !== "Bearer") {
-      return res.status(401).json({ error: "Invalid authorization format" });
+      return sendError(res, {
+        message: "Invalid authorization format",
+        status: 401,
+      });
     }
 
     const token = parts[1];
 
-    if (!token) return res.status(401).json({ error: "Token missing" });
+    if (!token)
+      return sendError(res, { message: "Token missing", status: 401 });
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
@@ -26,7 +34,7 @@ function requireAuth(req, res, next) {
     next();
   } catch (err) {
     console.error("Auth error: ", err);
-    return res.status(401).json({ error: "Invalid or expired token" });
+    return sendError(res, { message: "Invalid or expired token", status: 401 });
   }
 }
 

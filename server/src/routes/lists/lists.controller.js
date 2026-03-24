@@ -1,3 +1,4 @@
+const { sendSuccess, sendError } = require("../../utils/response");
 const {
   getAllLists,
   getListById,
@@ -11,10 +12,12 @@ async function httpGetAllLists(req, res) {
 
   try {
     const lists = await getAllLists(userId);
-    res.status(200).json({ lists });
+    return sendSuccess(res, {
+      data: { lists },
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to fetch lists" });
+    return sendError(res, { message: "Failed to fetch lists" });
   }
 }
 
@@ -25,12 +28,15 @@ async function httpGetListById(req, res) {
   try {
     const list = await getListById(userId, listId);
 
-    if (!list) return res.status(404).json({ error: "List not found" });
+    if (!list)
+      return sendError(res, { message: "List not found", status: 404 });
 
-    res.status(200).json({ list });
+    return sendSuccess(res, {
+      data: { list },
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to fetch list" });
+    return sendError(res, { message: "Failed to fetch list" });
   }
 }
 
@@ -41,10 +47,13 @@ async function httpCreateList(req, res) {
   try {
     const newList = await createList(userId, name);
 
-    res.status(201).json({ message: "List created", list: newList });
+    return sendSuccess(res, {
+      data: { list: newList },
+      status: 201,
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to create list" });
+    return sendError(res, { message: "Failed to create list" });
   }
 }
 
@@ -56,12 +65,15 @@ async function httpUpdateListName(req, res) {
   try {
     const updatedList = await updateListName(userId, listId, name);
 
-    if (!updatedList) return res.status(404).json({ error: "List not found" });
+    if (!updatedList)
+      return sendError(res, { message: "List not found", status: 404 });
 
-    res.status(200).json({ message: "List updated", list: updatedList });
+    return sendSuccess(res, {
+      data: { list: updatedList },
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to update list" });
+    return sendError(res, { message: "Failed to update list" });
   }
 }
 
@@ -72,12 +84,15 @@ async function httpDeleteList(req, res) {
   try {
     const deletedList = await deleteList(userId, listId);
 
-    if (!deletedList) return res.status(404).json({ error: "List not found" });
+    if (!deletedList)
+      return sendError(res, { message: "List not found", status: 404 });
 
-    res.status(200).json({ message: "List deleted", list: deletedList });
+    return sendSuccess(res, {
+      data: { list: deletedList },
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to delete list" });
+    return sendError(res, { message: "Failed to delete list" });
   }
 }
 

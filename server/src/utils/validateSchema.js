@@ -1,3 +1,5 @@
+const { sendError } = require("./response");
+
 function validate(schema, source = "body") {
   return (req, res, next) => {
     const data = req[source];
@@ -7,10 +9,10 @@ function validate(schema, source = "body") {
     if (!result.success) {
       const issue = result.error.issues[0];
 
-      return res.status(400).json({
-        error: "VALIDATION_ERROR",
-        field: issue.path?.[0] || null,
+      return sendError(res, {
         message: issue.message,
+        field: issue.path?.[0] || null,
+        status: 400,
       });
     }
 

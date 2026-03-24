@@ -1,3 +1,4 @@
+const { sendSuccess, sendError } = require("../../utils/response");
 const {
   getAllTasks,
   getTaskById,
@@ -16,21 +17,25 @@ async function httpGetAllTasks(req, res) {
     const totalPages = Math.ceil(total / limit);
     const currentPage = Math.floor(offset / limit) + 1;
 
-    res.status(200).json({
-      tasks,
-      pagination: {
-        total,
-        limit,
-        offset,
-        totalPages,
-        currentPage,
-        hasNextPage: offset + limit < total,
-        hasPrevPage: offset > 0,
+    return sendSuccess(res, {
+      data: { tasks },
+      meta: {
+        pagination: {
+          total,
+          limit,
+          offset,
+          totalPages,
+          currentPage,
+          hasNextPage: offset + limit < total,
+          hasPrevPage: offset > 0,
+        },
       },
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to fetch tasks" });
+    return sendError(res, {
+      message: "Failed to fetch tasks",
+    });
   }
 }
 
@@ -41,12 +46,15 @@ async function httpGetTaskById(req, res) {
   try {
     const task = await getTaskById(userId, id);
 
-    if (!task) return res.status(404).json({ error: "Task not found" });
+    if (!task)
+      return sendError(res, { message: "Task not found", status: 404 });
 
-    res.status(200).json({ task });
+    return sendSuccess(res, {
+      data: { task },
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to fetch task" });
+    return sendError(res, { message: "Failed to fetch task" });
   }
 }
 
@@ -57,12 +65,17 @@ async function httpCreateTask(req, res) {
   try {
     const newTask = await createTask(userId, taskData);
 
-    res.status(201).json({ message: "Task created", task: newTask });
+    return sendSuccess(res, {
+      data: { task: newTask },
+      status: 201,
+    });
+    // res.status(201).json({ message: "Task created", task: newTask });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to create task" });
+    return sendError(res, { message: "Failed to create task" });
   }
 }
+
 async function httpUpdateTask(req, res) {
   const userId = req.user.userId;
   const { id } = req.params;
@@ -71,14 +84,20 @@ async function httpUpdateTask(req, res) {
   try {
     const updatedTask = await updateTask(userId, id, updates);
 
-    if (!updatedTask) return res.status(404).json({ error: "Task not found" });
+    if (!updatedTask)
+      return sendError(res, { message: "Task not found", status: 404 });
+    // return res.status(404).json({ error: "Task not found" });
 
-    res.status(200).json({ message: "Task updated", task: updatedTask });
+    return sendSuccess(res, {
+      data: { task: updatedTask },
+    });
+    // res.status(200).json({ message: "Task updated", task: updatedTask });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to update task" });
+    return sendError(res, { message: "Failed to update task" });
   }
 }
+
 async function httpDeleteTask(req, res) {
   const userId = req.user.userId;
   const { id } = req.params;
@@ -86,12 +105,17 @@ async function httpDeleteTask(req, res) {
   try {
     const deletedTask = await deleteTask(userId, id);
 
-    if (!deletedTask) return res.status(404).json({ error: "Task not found" });
+    if (!deletedTask)
+      return sendError(res, { message: "Task not found", status: 404 });
+    // return res.status(404).json({ error: "Task not found" });
 
-    res.status(200).json({ message: "Task deleted", task: deletedTask });
+    return sendSuccess(res, {
+      data: { task: deletedTask },
+    });
+    // res.status(200).json({ message: "Task deleted", task: deletedTask });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to delete task" });
+    return sendError(res, { message: "Failed to delete task" });
   }
 }
 
