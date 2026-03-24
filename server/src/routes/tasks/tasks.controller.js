@@ -8,12 +8,26 @@ const {
 
 async function httpGetAllTasks(req, res) {
   const userId = req.user.userId;
-  const { listId } = req.query;
+  const { listId, limit, offset } = req.query;
 
   try {
-    const tasks = await getAllTasks(userId, listId);
+    const { tasks, total } = await getAllTasks(userId, listId, limit, offset);
 
-    res.status(200).json({ tasks });
+    const totalPages = Math.ceil(total / limit);
+    const currentPage = Math.floor(offset / limit) + 1;
+
+    res.status(200).json({
+      tasks,
+      pagination: {
+        total,
+        limit,
+        offset,
+        totalPages,
+        currentPage,
+        hasNextPage: offset + limit < total,
+        hasPrevPage: offset > 0,
+      },
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch tasks" });

@@ -1,27 +1,43 @@
 const pool = require("../db/database");
+const paginate = require("../db/paginate");
 
-async function getAllTasks(userId, listId) {
-  if (listId) {
-    const result = await pool.query(
-      `SELECT *
-               FROM tasks
-               WHERE user_id = $1 AND list_id = $2
-               ORDER BY created_at DESC`,
-      [userId, listId],
-    );
+async function getAllTasks(userId, listId, limit, offset) {
+  const baseWhere = listId
+    ? `WHERE user_id = $1 AND list_id = $2`
+    : `WHERE user_id = $1`;
 
-    return result.rows;
-  }
+  const dataQuery = `
+    SELECT *
+    FROM tasks
+    ${baseWhere}
+    ORDER BY created_at DESC
+    LIMIT $${listId ? 3 : 2}
+    OFFSET $${listId ? 4 : 3}
+  `;
 
-  const result = await pool.query(
-    `SELECT * 
-         FROM tasks
-         WHERE user_id = $1
-         ORDER BY created_at DESC`,
-    [userId],
-  );
+  const countQuery = `
+    SELECT COUNT(*)
+    FROM tasks
+    ${baseWhere}
+  `;
 
-  return result.rows;
+  const dataParams = listId
+    ? [userId, listId, limit, offset]
+    : [userId, limit, offset];
+
+  const countParams = listId ? [userId, listId] : [userId];
+
+  const { rows, total } = await paginate({
+    dataQuery,
+    dataParams,
+    countQuery,
+    countParams,
+  });
+
+  return {
+    tasks: rows,
+    total,
+  };
 }
 
 async function getTaskById(userId, taskId) {
