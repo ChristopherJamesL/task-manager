@@ -1,24 +1,35 @@
 const pool = require("../db/database");
 const paginate = require("../db/paginate");
 
-async function getAllTasks(userId, listId, cursor, limit) {
+async function getAllTasks(userId, listId, filters = {}, cursor, limit) {
+  // Base query
   let dataWhere = listId
     ? `WHERE user_id = $1 AND list_id = $2`
     : `WHERE user_id = $1`;
 
-  if (cursor?.createdAt && cursor?.id) {
-    dataWhere += listId
-      ? ` AND (created_at, id) < ($3, $4)`
-      : ` AND (created_at, id) < ($2, $3)`;
+  let paramIndex = listId ? 3 : 2;
+
+  // Initial query values array
+  const dataParams = [userId];
+  if (listId !== undefined) dataParams.push(listId);
+
+  if (filters.priority) {
+    dataWhere += ` AND priority = $${paramIndex++}`;
+    dataParams.push(filters.priority);
   }
 
-  const dataParams = [userId];
+  if (filters.isCompleted !== undefined) {
+    dataWhere += ` AND is_completed = $${paramIndex++}`;
+    dataParams.push(filters.isCompleted);
+  }
 
-  if (listId !== undefined) dataParams.push(listId);
   if (cursor?.createdAt && cursor?.id) {
+    dataWhere += ` AND (created_at, id) < ($${paramIndex}, $${paramIndex + 1})`;
     dataParams.push(cursor.createdAt);
     dataParams.push(cursor.id);
+    paramIndex += 2;
   }
+
   dataParams.push(limit);
 
   const dataQuery = `

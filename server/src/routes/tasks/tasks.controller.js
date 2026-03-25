@@ -9,7 +9,8 @@ const {
 
 async function httpGetAllTasks(req, res) {
   const userId = req.user.userId;
-  const { listId, limit, cursorCreatedAt, cursorId } = req.query;
+  const { listId, limit, cursorCreatedAt, cursorId, priority, isCompleted } =
+    req.query;
 
   const limitValue = limit || 10;
 
@@ -19,7 +20,13 @@ async function httpGetAllTasks(req, res) {
       : null;
 
   try {
-    const { tasks } = await getAllTasks(userId, listId, cursor, limitValue);
+    const { tasks } = await getAllTasks(
+      userId,
+      listId,
+      { priority, isCompleted },
+      cursor,
+      limitValue,
+    );
 
     const lastTask = tasks[tasks.length - 1];
 
