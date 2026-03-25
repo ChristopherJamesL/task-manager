@@ -32,6 +32,14 @@ async function httpRegister(req, res) {
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("Registration error: ", err);
+
+    if (err.code === "23505") {
+      return sendError(res, {
+        message: "Username or email already exists",
+        status: 400,
+      });
+    }
+
     return sendError(res, { message: "Registration failed" });
   } finally {
     client.release();

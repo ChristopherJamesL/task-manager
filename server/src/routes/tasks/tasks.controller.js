@@ -9,26 +9,32 @@ const {
 
 async function httpGetAllTasks(req, res) {
   const userId = req.user.userId;
-  const { listId, limit, offset } = req.query;
+  const { listId, limit, cursorCreatedAt, cursorId } = req.query;
+
+  const limitValue = limit || 10;
+
+  const cursor =
+    cursorCreatedAt && cursorId !== undefined
+      ? { createdAt: cursorCreatedAt, id: cursorId }
+      : null;
 
   try {
-    const { tasks, total } = await getAllTasks(userId, listId, limit, offset);
+    const { tasks } = await getAllTasks(userId, listId, cursor, limitValue);
 
-    const totalPages = Math.ceil(total / limit);
-    const currentPage = Math.floor(offset / limit) + 1;
+    const lastTask = tasks[tasks.length - 1];
+
+    const nextCursor = lastTask
+      ? {
+          createdAt: lastTask.created_at,
+          id: lastTask.id,
+        }
+      : null;
 
     return sendSuccess(res, {
       data: { tasks },
       meta: {
-        pagination: {
-          total,
-          limit,
-          offset,
-          totalPages,
-          currentPage,
-          hasNextPage: offset + limit < total,
-          hasPrevPage: offset > 0,
-        },
+        nextCursor,
+        hasNextPage: tasks.length === limitValue,
       },
     });
   } catch (err) {
@@ -69,7 +75,6 @@ async function httpCreateTask(req, res) {
       data: { task: newTask },
       status: 201,
     });
-    // res.status(201).json({ message: "Task created", task: newTask });
   } catch (err) {
     console.error(err);
     return sendError(res, { message: "Failed to create task" });
@@ -86,12 +91,10 @@ async function httpUpdateTask(req, res) {
 
     if (!updatedTask)
       return sendError(res, { message: "Task not found", status: 404 });
-    // return res.status(404).json({ error: "Task not found" });
 
     return sendSuccess(res, {
       data: { task: updatedTask },
     });
-    // res.status(200).json({ message: "Task updated", task: updatedTask });
   } catch (err) {
     console.error(err);
     return sendError(res, { message: "Failed to update task" });
@@ -107,12 +110,10 @@ async function httpDeleteTask(req, res) {
 
     if (!deletedTask)
       return sendError(res, { message: "Task not found", status: 404 });
-    // return res.status(404).json({ error: "Task not found" });
 
     return sendSuccess(res, {
       data: { task: deletedTask },
     });
-    // res.status(200).json({ message: "Task deleted", task: deletedTask });
   } catch (err) {
     console.error(err);
     return sendError(res, { message: "Failed to delete task" });

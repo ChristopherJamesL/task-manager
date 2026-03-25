@@ -8,12 +8,14 @@ const isCompleted = z.boolean();
 const listId = z.coerce.number();
 const dueDate = z.iso.datetime({ offset: true });
 const limit = z.coerce.number().min(1).max(50);
-const offset = z.coerce.number().min(0);
+const cursorCreatedAt = z.iso.datetime();
+const cursorId = z.coerce.number();
 
 const getTasksQuerySchema = z.object({
   listId: listId.optional(),
   limit: limit.default(10),
-  offset: offset.default(0),
+  cursorCreatedAt: cursorCreatedAt.optional(),
+  cursorId: cursorId.optional(),
 });
 
 const createTaskSchema = z.object({
