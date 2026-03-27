@@ -7,6 +7,23 @@ const {
   deleteTask,
 } = require("../../models/tasks.model");
 
+/**
+ * GET /tasks
+ *
+ * Retrieves tasks with filtering, sorting, and cursor-based pagination.
+ *
+ * Query Params:
+ * - listId (number)
+ * - limit (number, default: 10)
+ * - cursorValue (ISO datetime)
+ * - cursorId (number)
+ * - priority ('low' | 'medium' | 'high')
+ * - isCompleted (boolean, default: false)
+ * - dueBefore (ISO datetime)
+ * - dueAfter (ISO datetime)
+ * - sortBy ('createdAt' | 'dueDate')
+ * - order ('asc' | 'desc')
+ */
 async function httpGetAllTasks(req, res) {
   const userId = req.user.userId;
   const {
@@ -24,6 +41,7 @@ async function httpGetAllTasks(req, res) {
 
   const limitValue = limit || 10;
 
+  // Build cursor for pagination if provided
   const cursor =
     cursorValue && cursorId !== undefined
       ? { value: cursorValue, id: cursorId }

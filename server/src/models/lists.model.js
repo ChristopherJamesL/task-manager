@@ -34,7 +34,7 @@ async function createList(userId, name) {
   return result.rows[0];
 }
 
-async function updateListName(userId, listId, name) {
+async function updateList(userId, listId, name) {
   const result = await pool.query(
     `UPDATE lists
          SET name = $3
@@ -61,6 +61,6 @@ module.exports = {
   getAllLists,
   getListById,
   createList,
-  updateListName,
+  updateList,
   deleteList,
 };

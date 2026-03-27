@@ -2,9 +2,6 @@ const pool = require("../db/database");
 const paginate = require("../db/paginate");
 
 async function getAllTasks(userId, listId, filters = {}, cursor, limit) {
-  // =============================
-  // Setup defaults & constants
-  // =============================
   const { priority, isCompleted, dueBefore, dueAfter, sortBy, order } = filters;
 
   const sortColumn = sortBy === "dueDate" ? "due_date" : "created_at";
@@ -14,14 +11,10 @@ async function getAllTasks(userId, listId, filters = {}, cursor, limit) {
 
   let paramIndex = listId ? 3 : 2;
 
-  // =============================
-  // Build WHERE clause
-  // =============================
   let dataWhere = listId
     ? `WHERE user_id = $1 AND list_id = $2`
     : `WHERE user_id = $1`;
 
-  // Initial dependancy array
   const dataParams = [userId];
 
   if (listId !== undefined) dataParams.push(listId);
@@ -42,13 +35,11 @@ async function getAllTasks(userId, listId, filters = {}, cursor, limit) {
   }
 
   if (dueAfter) {
-    dataWhere += ` AND due_date >= $${paramIndex++}`; //6
+    dataWhere += ` AND due_date >= $${paramIndex++}`;
     dataParams.push(dueAfter);
   }
 
-  // =============================
-  // Cursor pagination
-  // =============================
+  // Cursor-based pagination using (sortColumn, id) to ensure stable ordering
   if (cursor?.value && cursor?.id) {
     dataWhere += ` AND (${sortColumn}, id) ${operator} ($${paramIndex}, $${paramIndex + 1})`;
     dataParams.push(cursor.value);
@@ -56,14 +47,8 @@ async function getAllTasks(userId, listId, filters = {}, cursor, limit) {
     paramIndex += 2;
   }
 
-  // =============================
-  // Add limit
-  // =============================
   dataParams.push(limit);
 
-  // =============================
-  // Final query
-  // =============================
   const dataQuery = `
     SELECT *
     FROM tasks
@@ -107,6 +92,8 @@ async function createTask(userId, taskData) {
 
 async function updateTask(userId, taskId, updates) {
   const { title, description, isCompleted, priority, dueDate } = updates;
+
+  // Dynamically build partial update query based on provided fields
   const fields = [];
   const values = [];
   let index = 1;

@@ -3,7 +3,7 @@ const {
   httpGetAllLists,
   httpGetListById,
   httpCreateList,
-  httpUpdateListName,
+  httpUpdateList,
   httpDeleteList,
 } = require("./lists.controller");
 const requireAuth = require("../../middleware/requireAuth");
@@ -29,7 +29,7 @@ listsRouter.patch(
   requireAuth,
   validate(listIdParamSchema, "params"),
   validate(updateListSchema),
-  httpUpdateListName,
+  httpUpdateList,
 );
 listsRouter.delete(
   "/:id",

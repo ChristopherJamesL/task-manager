@@ -3,7 +3,7 @@ const {
   getAllLists,
   getListById,
   createList,
-  updateListName,
+  updateList,
   deleteList,
 } = require("../../models/lists.model");
 
@@ -57,13 +57,13 @@ async function httpCreateList(req, res) {
   }
 }
 
-async function httpUpdateListName(req, res) {
+async function httpUpdateList(req, res) {
   const userId = req.user.userId;
   const { name } = req.body;
   const listId = req.params.id;
 
   try {
-    const updatedList = await updateListName(userId, listId, name);
+    const updatedList = await updateList(userId, listId, name);
 
     if (!updatedList)
       return sendError(res, { message: "List not found", status: 404 });
@@ -100,6 +100,6 @@ module.exports = {
   httpGetAllLists,
   httpGetListById,
   httpCreateList,
-  httpUpdateListName,
+  httpUpdateList,
   httpDeleteList,
 };
