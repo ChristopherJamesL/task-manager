@@ -2,41 +2,73 @@ const pool = require("../db/database");
 const paginate = require("../db/paginate");
 
 async function getAllTasks(userId, listId, filters = {}, cursor, limit) {
-  // Base query
+  // =============================
+  // Setup defaults & constants
+  // =============================
+  const { priority, isCompleted, dueBefore, dueAfter, sortBy, order } = filters;
+
+  const sortColumn = sortBy === "dueDate" ? "due_date" : "created_at";
+  const direction = order === "asc" ? "ASC" : "DESC";
+  const orderBy = `${sortColumn} ${direction}, id ${direction}`;
+  const operator = order === "asc" ? ">" : "<";
+
+  let paramIndex = listId ? 3 : 2;
+
+  // =============================
+  // Build WHERE clause
+  // =============================
   let dataWhere = listId
     ? `WHERE user_id = $1 AND list_id = $2`
     : `WHERE user_id = $1`;
 
-  let paramIndex = listId ? 3 : 2;
-
-  // Initial query values array
+  // Initial dependancy array
   const dataParams = [userId];
+
   if (listId !== undefined) dataParams.push(listId);
 
-  if (filters.priority) {
+  if (priority) {
     dataWhere += ` AND priority = $${paramIndex++}`;
-    dataParams.push(filters.priority);
+    dataParams.push(priority);
   }
 
-  if (filters.isCompleted !== undefined) {
+  if (isCompleted !== undefined) {
     dataWhere += ` AND is_completed = $${paramIndex++}`;
-    dataParams.push(filters.isCompleted);
+    dataParams.push(isCompleted);
   }
 
-  if (cursor?.createdAt && cursor?.id) {
-    dataWhere += ` AND (created_at, id) < ($${paramIndex}, $${paramIndex + 1})`;
-    dataParams.push(cursor.createdAt);
+  if (dueBefore) {
+    dataWhere += ` AND due_date <= $${paramIndex++}`;
+    dataParams.push(dueBefore);
+  }
+
+  if (dueAfter) {
+    dataWhere += ` AND due_date >= $${paramIndex++}`; //6
+    dataParams.push(dueAfter);
+  }
+
+  // =============================
+  // Cursor pagination
+  // =============================
+  if (cursor?.value && cursor?.id) {
+    dataWhere += ` AND (${sortColumn}, id) ${operator} ($${paramIndex}, $${paramIndex + 1})`;
+    dataParams.push(cursor.value);
     dataParams.push(cursor.id);
     paramIndex += 2;
   }
 
+  // =============================
+  // Add limit
+  // =============================
   dataParams.push(limit);
 
+  // =============================
+  // Final query
+  // =============================
   const dataQuery = `
     SELECT *
     FROM tasks
     ${dataWhere}
-    ORDER BY created_at DESC, id DESC
+    ORDER BY ${orderBy}
     LIMIT $${dataParams.length}
   `;
 

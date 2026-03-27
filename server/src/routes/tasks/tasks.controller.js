@@ -9,30 +9,42 @@ const {
 
 async function httpGetAllTasks(req, res) {
   const userId = req.user.userId;
-  const { listId, limit, cursorCreatedAt, cursorId, priority, isCompleted } =
-    req.query;
+  const {
+    listId,
+    limit,
+    cursorValue,
+    cursorId,
+    priority,
+    isCompleted,
+    dueBefore,
+    dueAfter,
+    sortBy,
+    order,
+  } = res.locals.validatedQuery;
 
   const limitValue = limit || 10;
 
   const cursor =
-    cursorCreatedAt && cursorId !== undefined
-      ? { createdAt: cursorCreatedAt, id: cursorId }
+    cursorValue && cursorId !== undefined
+      ? { value: cursorValue, id: cursorId }
       : null;
 
   try {
     const { tasks } = await getAllTasks(
       userId,
       listId,
-      { priority, isCompleted },
+      { priority, isCompleted, dueBefore, dueAfter, sortBy, order },
       cursor,
       limitValue,
     );
 
     const lastTask = tasks[tasks.length - 1];
 
+    const sortField = sortBy === "dueDate" ? "due_date" : "created_at";
+
     const nextCursor = lastTask
       ? {
-          createdAt: lastTask.created_at,
+          value: lastTask[sortField],
           id: lastTask.id,
         }
       : null;

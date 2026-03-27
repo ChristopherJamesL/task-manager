@@ -16,7 +16,11 @@ function validate(schema, source = "body") {
       });
     }
 
-    req[source] = result.data;
+    if (source === "query") {
+      res.locals.validatedQuery = result.data;
+    } else {
+      req[source] = result.data;
+    }
 
     next();
   };
