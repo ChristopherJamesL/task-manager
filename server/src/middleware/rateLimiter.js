@@ -32,17 +32,19 @@ async function preLoginRateLimiter(req, res, next) {
     const user = await findUserWithPassword(identifier);
     const userKey = user ? `user:${user.id}` : `user:${identifier}`;
 
-    await limiterByUser.get(userKey)?.then((r) => {
-      if (r && r.consumedPoints >= MAX_WRONG_ATTEMPTS_BY_USER_PER_MINUTE) {
-        throw { msBeforeNext: r.msBeforeNext };
-      }
-    });
+    await Promise.all([
+      limiterByUser.get(userKey).then((r) => {
+        if (r && r.consumedPoints >= MAX_WRONG_ATTEMPTS_BY_USER_PER_MINUTE) {
+          throw { msBeforeNext: r.msBeforeNext };
+        }
+      }),
 
-    await limiterByIP.get(ipAddr)?.then((r) => {
-      if (r && r.consumedPoints >= MAX_WRONG_ATTEMPTS_BY_IP_PER_HOUR) {
-        throw { msBeforeNext: r.msBeforeNext };
-      }
-    });
+      limiterByIP.get(ipAddr).then((r) => {
+        if (r && r.consumedPoints >= MAX_WRONG_ATTEMPTS_BY_IP_PER_HOUR) {
+          throw { msBeforeNext: r.msBeforeNext };
+        }
+      }),
+    ]);
 
     next();
   } catch (err) {
