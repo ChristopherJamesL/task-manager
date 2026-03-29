@@ -5,13 +5,22 @@ const {
   httpMe,
   httpLogout,
 } = require("./auth.controller");
-const requireAuth = require("../../middleware/requireAuth");
 const { registerSchema, signInSchema, validate } = require("./auth.validator");
+const {
+  preLoginRateLimiter,
+  consumeLoginFail,
+} = require("../../middleware/rateLimiter");
+const requireAuth = require("../../middleware/requireAuth");
 
 const authRouter = express.Router();
 
 authRouter.post("/register", validate(registerSchema), httpRegister);
-authRouter.post("/signin", validate(signInSchema), httpSignIn);
+authRouter.post(
+  "/signin",
+  validate(signInSchema),
+  preLoginRateLimiter,
+  httpSignIn,
+);
 authRouter.post("/logout", requireAuth, httpLogout);
 
 authRouter.get("/me", requireAuth, httpMe);

@@ -1,4 +1,4 @@
-const { sendError } = require("./response");
+const { sendError } = require("../utils/response");
 
 function validate(schema, source = "body") {
   return (req, res, next) => {

@@ -30,6 +30,26 @@ ON tasks (user_id, created_at DESC, id DESC);
 CREATE INDEX idx_tasks_user_due_id
 ON tasks (user_id, due_date DESC, id DESC);
 
+-- Lookup tasks filtered by list_id and by is_completed = FALSE:
+--  - Supports pagination wth ORDER BY created_at or due_date
+CREATE INDEX idx_tasks_user_list_created_id_incomplete
+ON tasks (user_id, list_id, created_at DESC, id DESC)
+WHERE is_completed = FALSE;
+
+CREATE INDEX idx_tasks_user_list_due_id_incomplete
+ON tasks (user_id, list_id, due_date DESC, id DESC)
+WHERE is_completed = FALSE;
+
+--Lookup tasks without filtering by list_id.  Filter by is_completed = FALSE:
+--  - Support pagination with ORDER BY created_at or due_date
+CREATE INDEX idx_tasks_user_created_id_incomplete
+ON tasks (user_id, created_at DESC, id DESC)
+WHERE is_completed = FALSE;
+
+CREATE INDEX idx_tasks_user_due_id_incomplete
+ON tasks (user_id, due_date DESC, id DESC)
+WHERE is_completed = FALSE;
+
 -- TASKS (lookup by ID within user scope)
 -- Supports:
 --   - Fetch single task securely

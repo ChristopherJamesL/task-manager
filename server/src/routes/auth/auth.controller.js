@@ -8,6 +8,7 @@ const {
   findUserWithPassword,
   findUserWithId,
 } = require("../../models/auth.model");
+const { consumeLoginFail } = require("../../middleware/rateLimiter");
 
 const SALT_ROUNDS = 10;
 
@@ -48,19 +49,24 @@ async function httpRegister(req, res) {
 
 async function httpSignIn(req, res) {
   const { identifier, password } = req.body;
+  const ipAddr = req.ip;
 
   try {
     const user = await findUserWithPassword(identifier);
 
-    if (!user)
+    if (!user) {
+      await consumeLoginFail(identifier, ipAddr);
       return sendError(res, { message: "Invalid credentials", status: 401 });
+    }
 
     const { id, username, email } = user;
 
     const isMatch = await bcrypt.compare(password, user.password_hash);
 
-    if (!isMatch)
+    if (!isMatch) {
+      await consumeLoginFail(identifier, ipAddr);
       return sendError(res, { message: "Invalid credentials", status: 401 });
+    }
 
     const token = jwt.sign({ userId: id }, process.env.JWT_SECRET, {
       expiresIn: "1h",

@@ -1,4 +1,4 @@
-const validate = require("../../utils/validateSchema");
+const validate = require("../../middleware/validateSchema");
 const { registerSchema, signInSchema } = require("./auth.schema");
 
 module.exports = {
