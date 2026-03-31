@@ -1,12 +1,19 @@
 const http = require("node:http");
 const app = require("./app");
-const { getRedisClient } = require("./db/redis");
+const pool = require("./db/database");
+const { initRedis } = require("./db/redis");
+const { initRateLimiters } = require("./middleware/rateLimiter");
 
 const port = process.env.port || 8000;
 
 async function startServer() {
   try {
-    getRedisClient();
+    const redisClient = await initRedis();
+
+    await pool.query("SELECT 1");
+    console.log("Connected to PostgreSQL...");
+
+    await initRateLimiters(redisClient);
 
     const server = http.createServer(app);
 

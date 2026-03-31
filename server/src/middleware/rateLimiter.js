@@ -3,26 +3,37 @@ const { getRedisClient } = require("../db/redis");
 const { findUserWithPassword } = require("../models/auth.model");
 const { sendError } = require("../utils/response");
 
-const redisClient = getRedisClient();
+let limiterByUser;
+let limiterByIp;
 
 const MAX_WRONG_ATTEMPTS_BY_USER_PER_MINUTE = 5;
 const MAX_WRONG_ATTEMPTS_BY_IP_PER_HOUR = 100;
 
-const limiterByUser = new RateLimiterRedis({
-  storeClient: redisClient,
-  keyPrefix: "login_fail_user",
-  points: MAX_WRONG_ATTEMPTS_BY_USER_PER_MINUTE,
-  duration: 60,
-  blockDuration: 60 * 5,
-});
+async function createLimiters(redisClient) {
+  const limiterByUser = new RateLimiterRedis({
+    storeClient: redisClient,
+    keyPrefix: "login_fail_user",
+    points: MAX_WRONG_ATTEMPTS_BY_USER_PER_MINUTE,
+    duration: 60,
+    blockDuration: 60 * 5,
+  });
 
-const limiterByIP = new RateLimiterRedis({
-  storeClient: redisClient,
-  keyPrefix: "login_fail_ip",
-  points: MAX_WRONG_ATTEMPTS_BY_IP_PER_HOUR,
-  duration: 60 * 60,
-  blockDuration: 60 * 15,
-});
+  const limiterByIP = new RateLimiterRedis({
+    storeClient: redisClient,
+    keyPrefix: "login_fail_ip",
+    points: MAX_WRONG_ATTEMPTS_BY_IP_PER_HOUR,
+    duration: 60 * 60,
+    blockDuration: 60 * 15,
+  });
+
+  return { limiterByUser, limiterByIP };
+}
+
+async function initRateLimiters(redisClient) {
+  const limiters = await createLimiters(redisClient);
+  limiterByUser = limiters.limiterByUser;
+  limiterByIP = limiters.limiterByIP;
+}
 
 async function preLoginRateLimiter(req, res, next) {
   const ipAddr = req.ip;
@@ -71,6 +82,7 @@ async function consumeLoginFail(identifier, ipAddr) {
 }
 
 module.exports = {
+  initRateLimiters,
   preLoginRateLimiter,
   consumeLoginFail,
 };

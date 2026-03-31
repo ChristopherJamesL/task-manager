@@ -1,19 +1,47 @@
-// const { createClient } = require("redis");
 const Redis = require("ioredis");
 
 let redisClient;
 
-function getRedisClient() {
+async function initRedis() {
   if (!redisClient) {
     redisClient = new Redis(process.env.REDIS_URL);
 
-    redisClient.on("connect", () => console.log("Redis connected..."));
+    redisClient.on("error", (err) => console.error("Redis error: ", err));
 
-    redisClient.on("error", () => console.error("Redis error: ", err));
+    await new Promise((resolve, reject) => {
+      function onReady() {
+        cleanup();
+        resolve();
+      }
+
+      function onError() {
+        cleanup();
+        reject();
+      }
+
+      function cleanup() {
+        redisClient.off("ready", onReady);
+        redisClient.off("error", onError);
+      }
+
+      redisClient.once("ready", onReady);
+      redisClient.once("error", onError);
+    });
+
+    console.log("Redis connected...");
+  }
+
+  return redisClient;
+}
+
+function getRedisClient() {
+  if (!redisClient) {
+    throw new Error("Redis not initialized.  Call initRedis() first.");
   }
   return redisClient;
 }
 
 module.exports = {
+  initRedis,
   getRedisClient,
 };

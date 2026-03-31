@@ -6,7 +6,7 @@ A full-stack task management application with authentication, list organization,
 
 - Frontend: React (in progress)
 - Backend: Node.js, Express
-- Database: PostgreSQL
+- Database: PostgreSQL, Redis rate limiting
 - Validation: Zod
 - Authentication: JWT (Bearer tokens)
 
