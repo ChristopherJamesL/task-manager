@@ -5,7 +5,7 @@ const {
   createList,
   updateList,
   deleteList,
-} = require("../../models/lists.model");
+} = require("./lists.model");
 
 async function httpGetAllLists(req, res) {
   const userId = req.user.userId;

@@ -7,7 +7,7 @@ const {
   createAuth,
   findUserWithPassword,
   findUserWithId,
-} = require("../../models/auth.model");
+} = require("./auth.model");
 const { consumeLoginFail } = require("../../middleware/rateLimiter");
 
 const SALT_ROUNDS = 10;
