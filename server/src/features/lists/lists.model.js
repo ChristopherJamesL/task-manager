@@ -1,4 +1,4 @@
-const pool = require("../db/database");
+const pool = require("../../db/database");
 
 async function getAllLists(userId) {
   const result = await pool.query(

@@ -5,7 +5,7 @@ const {
   createTask,
   updateTask,
   deleteTask,
-} = require("../../models/tasks.model");
+} = require("./tasks.model");
 
 /**
  * GET /tasks
