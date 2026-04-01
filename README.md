@@ -76,7 +76,7 @@ cd server
 npm install
 ```
 
-1. Set up environment variables
+1. Set up environment variables  
   Create a `.env` file in `/server`:
 
 ```env
@@ -86,7 +86,7 @@ REDIS_URL=your_redis_connection_string
 JWT_SECRET=your_jwt_secret
 ```
 
-1. Run the server
+1. Run the server  
   From the project root:
 
 ```bash
