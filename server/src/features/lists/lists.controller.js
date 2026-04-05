@@ -43,9 +43,10 @@ async function httpGetListById(req, res) {
 async function httpCreateList(req, res) {
   const userId = req.user.userId;
   const { name } = req.body;
+  const normalizeName = name.toLowerCase().trim();
 
   try {
-    const newList = await createList(userId, name);
+    const newList = await createList(userId, normalizeName);
 
     return sendSuccess(res, {
       data: { list: newList },
@@ -53,6 +54,12 @@ async function httpCreateList(req, res) {
     });
   } catch (err) {
     console.error(err);
+    if (err.code === "23505") {
+      return sendError(res, {
+        message: "List name already exists",
+        status: 400,
+      });
+    }
     return sendError(res, { message: "Failed to create list" });
   }
 }
