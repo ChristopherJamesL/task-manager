@@ -57,7 +57,7 @@ root/
   - router
   - controller
   - model
-  - service (in progress)
+  - service
 - Clear separation of concerns:
   - Controllers → handle HTTP layer
   - Services → business logic (being introduced)
@@ -111,21 +111,25 @@ Base URL:
 
 ### Auth
 
-- POST /auth/register
-- POST /auth/login
-- GET /auth/me
+- POST /api/auth/register
+- POST /api/auth/login
+- GET /api/auth/me
 
 ### Tasks
 
-- GET /tasks
-- GET /tasks/:id
-- POST /tasks
-- PATCH /tasks/:id
-- DELETE /tasks/:id
+- GET /api/tasks
+- GET /api/tasks/:id
+- POST /api/tasks
+- PATCH /api/tasks/:id
+- DELETE /api/tasks/:id
 
 ### Lists
 
-- CRUD endpoints for task lists
+- GET /api/lists
+- GET /api/lists/:id
+- POST /api/lists
+- PATCH /api/lists/:id
+- DELETE /api/lists/:id
 
 ## 🔐 Security & Reliability
 
@@ -136,7 +140,6 @@ Base URL:
 
 ## 📈 Future Improvements
 
-- Complete service layer refactor
 - Add automated tests (Jest + Supertest)
 - API documentation (Swagger/OpenAPI)
 - Redis caching for frequently accessed data
