@@ -5,7 +5,7 @@ const {
   createTask,
   updateTask,
   deleteTask,
-} = require("./tasks.model");
+} = require("./tasks.service");
 
 /**
  * GET /tasks
@@ -26,53 +26,13 @@ const {
  */
 async function httpGetAllTasks(req, res) {
   const userId = req.user.userId;
-  const {
-    listId,
-    limit,
-    cursorValue,
-    cursorId,
-    priority,
-    isCompleted,
-    dueBefore,
-    dueAfter,
-    sortBy,
-    order,
-  } = res.locals.validatedQuery;
-
-  const limitValue = limit || 10;
-
-  // Build cursor for pagination if provided
-  const cursor =
-    cursorValue && cursorId !== undefined
-      ? { value: cursorValue, id: cursorId }
-      : null;
 
   try {
-    const { tasks } = await getAllTasks(
-      userId,
-      listId,
-      { priority, isCompleted, dueBefore, dueAfter, sortBy, order },
-      cursor,
-      limitValue,
-    );
-
-    const lastTask = tasks[tasks.length - 1];
-
-    const sortField = sortBy === "dueDate" ? "due_date" : "created_at";
-
-    const nextCursor = lastTask
-      ? {
-          value: lastTask[sortField],
-          id: lastTask.id,
-        }
-      : null;
+    const result = await getAllTasks({ userId, ...res.locals.validatedQuery });
 
     return sendSuccess(res, {
-      data: { tasks },
-      meta: {
-        nextCursor,
-        hasNextPage: tasks.length === limitValue,
-      },
+      data: result.tasks,
+      meta: result.meta,
     });
   } catch (err) {
     console.error(err);
@@ -87,13 +47,13 @@ async function httpGetTaskById(req, res) {
   const { id } = req.params;
 
   try {
-    const task = await getTaskById(userId, id);
+    const result = await getTaskById({ userId, id });
 
-    if (!task)
-      return sendError(res, { message: "Task not found", status: 404 });
+    if (result.error)
+      return sendError(res, { message: result.error, status: result.status });
 
     return sendSuccess(res, {
-      data: { task },
+      data: result,
     });
   } catch (err) {
     console.error(err);
@@ -106,10 +66,10 @@ async function httpCreateTask(req, res) {
   const taskData = req.body;
 
   try {
-    const newTask = await createTask(userId, taskData);
+    const result = await createTask({ userId, taskData });
 
     return sendSuccess(res, {
-      data: { task: newTask },
+      data: result,
       status: 201,
     });
   } catch (err) {
@@ -124,13 +84,13 @@ async function httpUpdateTask(req, res) {
   const updates = req.body;
 
   try {
-    const updatedTask = await updateTask(userId, id, updates);
+    const result = await updateTask({ userId, id, updates });
 
-    if (!updatedTask)
-      return sendError(res, { message: "Task not found", status: 404 });
+    if (result.error)
+      return sendError(res, { message: result.error, status: result.status });
 
     return sendSuccess(res, {
-      data: { task: updatedTask },
+      data: result,
     });
   } catch (err) {
     console.error(err);
@@ -143,13 +103,13 @@ async function httpDeleteTask(req, res) {
   const { id } = req.params;
 
   try {
-    const deletedTask = await deleteTask(userId, id);
+    const result = await deleteTask({ userId, id });
 
-    if (!deletedTask)
-      return sendError(res, { message: "Task not found", status: 404 });
+    if (result.error)
+      return sendError(res, { message: result.error, status: result.status });
 
     return sendSuccess(res, {
-      data: { task: deletedTask },
+      data: result,
     });
   } catch (err) {
     console.error(err);

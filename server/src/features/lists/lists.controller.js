@@ -5,15 +5,13 @@ const {
   createList,
   updateList,
   deleteList,
-} = require("./lists.model");
+} = require("./lists.service");
 
 async function httpGetAllLists(req, res) {
-  const userId = req.user.userId;
-
   try {
-    const lists = await getAllLists(userId);
+    const result = await getAllLists(req.user.userId);
     return sendSuccess(res, {
-      data: { lists },
+      data: result,
     });
   } catch (err) {
     console.error(err);
@@ -26,13 +24,13 @@ async function httpGetListById(req, res) {
   const listId = req.params.id;
 
   try {
-    const list = await getListById(userId, listId);
+    const result = await getListById({ userId, listId });
 
-    if (!list)
-      return sendError(res, { message: "List not found", status: 404 });
+    if (result.error)
+      return sendError(res, { message: result.error, status: result.status });
 
     return sendSuccess(res, {
-      data: { list },
+      data: result,
     });
   } catch (err) {
     console.error(err);
@@ -43,13 +41,12 @@ async function httpGetListById(req, res) {
 async function httpCreateList(req, res) {
   const userId = req.user.userId;
   const { name } = req.body;
-  const normalizeName = name.toLowerCase().trim();
 
   try {
-    const newList = await createList(userId, normalizeName);
+    const result = await createList({ userId, name });
 
     return sendSuccess(res, {
-      data: { list: newList },
+      data: result,
       status: 201,
     });
   } catch (err) {
@@ -70,13 +67,13 @@ async function httpUpdateList(req, res) {
   const listId = req.params.id;
 
   try {
-    const updatedList = await updateList(userId, listId, name);
+    const result = await updateList({ userId, listId, name });
 
-    if (!updatedList)
-      return sendError(res, { message: "List not found", status: 404 });
+    if (result.error)
+      return sendError(res, { message: result.error, status: result.status });
 
     return sendSuccess(res, {
-      data: { list: updatedList },
+      data: result,
     });
   } catch (err) {
     console.error(err);
@@ -89,13 +86,13 @@ async function httpDeleteList(req, res) {
   const listId = req.params.id;
 
   try {
-    const deletedList = await deleteList(userId, listId);
+    const result = await deleteList({ userId, listId });
 
-    if (!deletedList)
-      return sendError(res, { message: "List not found", status: 404 });
+    if (result.error)
+      return sendError(res, { message: result.error, status: result.status });
 
     return sendSuccess(res, {
-      data: { list: deletedList },
+      data: result,
     });
   } catch (err) {
     console.error(err);
