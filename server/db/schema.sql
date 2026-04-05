@@ -26,7 +26,8 @@ CREATE TABLE lists (
 	created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
 	
 	CONSTRAINT fk_lists_user
-		FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+		FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+	CONSTRAINT unique_user_list_name UNIQUE (user_id, "name")
 );
 
 -- TASKS TABLE
