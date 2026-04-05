@@ -13,7 +13,7 @@ CREATE TABLE authentication (
 	id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	user_id INTEGER UNIQUE NOT NULL,
 	password_hash TEXT NOT NULL,
-	CONSTRAINT fk_user_auth
+	CONSTRAINT fk_auth_user
 		FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
@@ -25,7 +25,7 @@ CREATE TABLE lists (
 	name VARCHAR(50) NOT NULL,
 	created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
 	
-	CONSTRAINT fk_user_auth
+	CONSTRAINT fk_lists_user
 		FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
@@ -42,9 +42,9 @@ CREATE TABLE tasks (
 	due_date TIMESTAMPTZ,
 	created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
 
-	CONSTRAINT fk_user_auth
+	CONSTRAINT fk_tasks_user
 		FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
-	CONSTRAINT fk_list_id
+	CONSTRAINT fk_tasks_list_id
 		FOREIGN KEY(list_id) REFERENCES lists(id) ON DELETE SET NULL,
 	CONSTRAINT tasks_priority_check
 		CHECK (priority IN ('low', 'medium', 'high'));
