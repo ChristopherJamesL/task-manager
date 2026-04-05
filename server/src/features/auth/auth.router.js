@@ -6,10 +6,7 @@ const {
   httpLogout,
 } = require("./auth.controller");
 const { registerSchema, signInSchema, validate } = require("./auth.validator");
-const {
-  preLoginRateLimiter,
-  consumeLoginFail,
-} = require("../../middleware/rateLimiter");
+const { preLoginRateLimiter } = require("../../middleware/rateLimiter");
 const requireAuth = require("../../middleware/requireAuth");
 
 const authRouter = express.Router();

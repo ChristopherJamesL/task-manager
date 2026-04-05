@@ -4,7 +4,7 @@ const pool = require("./db/database");
 const { initRedis } = require("./db/redis");
 const { initRateLimiters } = require("./middleware/rateLimiter");
 
-const port = process.env.port || 8000;
+const port = process.env.PORT || 8000;
 
 async function startServer() {
   try {

@@ -14,13 +14,14 @@ const SALT_ROUNDS = 10;
 
 async function httpRegister(req, res) {
   const { username, email, password } = req.body;
+  const normalizedEmail = email.toLowerCase().trim();
   const client = await pool.connect();
 
   try {
     await client.query("BEGIN");
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
-    const user = await createUser(client, username, email);
+    const user = await createUser(client, username, normalizedEmail);
 
     await createAuth(client, user.id, hashedPassword);
 
