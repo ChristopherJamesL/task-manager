@@ -8,6 +8,11 @@ const {
   findUserWithId,
 } = require("./auth.model");
 const { consumeLoginFail } = require("../../middleware/rateLimiter");
+const {
+  ConflictError,
+  UnauthorizedError,
+  NotFoundError,
+} = require("../../utils/errors");
 
 const SALT_ROUNDS = 10;
 
@@ -17,6 +22,7 @@ async function registerUser({ username, email, password }) {
 
   try {
     await client.query("BEGIN");
+
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
     const user = await createUser(client, username, normalizedEmail);
@@ -28,6 +34,10 @@ async function registerUser({ username, email, password }) {
     return user;
   } catch (err) {
     await client.query("ROLLBACK");
+
+    if (err.code === "23505") {
+      throw new ConflictError("Username or email already exists");
+    }
     throw err;
   } finally {
     client.release();
@@ -39,14 +49,14 @@ async function signInUser({ identifier, password, ipAddr }) {
 
   if (!user) {
     await consumeLoginFail(identifier, ipAddr);
-    return { error: "Invalid credentials", status: 401 };
+    throw new UnauthorizedError("Invalid credentials");
   }
 
   const isMatch = await bcrypt.compare(password, user.password_hash);
 
   if (!isMatch) {
     await consumeLoginFail(identifier, ipAddr);
-    return { error: "Invalid credentials", status: 401 };
+    throw new UnauthorizedError("Invalid credentials");
   }
 
   const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
@@ -66,7 +76,7 @@ async function signInUser({ identifier, password, ipAddr }) {
 async function me(userId) {
   const user = await findUserWithId(userId);
 
-  if (!user) return { error: "User not found", status: 404 };
+  if (!user) throw new NotFoundError("User not found");
 
   return {
     user,

@@ -1,4 +1,4 @@
-const { sendSuccess, sendError } = require("../../utils/response");
+const { sendSuccess } = require("../../utils/response");
 const {
   getAllTasks,
   getTaskById,
@@ -27,55 +27,35 @@ const {
 async function httpGetAllTasks(req, res) {
   const userId = req.user.userId;
 
-  try {
-    const result = await getAllTasks({ userId, ...res.locals.validatedQuery });
+  const result = await getAllTasks({ userId, ...res.locals.validatedQuery });
 
-    return sendSuccess(res, {
-      data: result.tasks,
-      meta: result.meta,
-    });
-  } catch (err) {
-    console.error(err);
-    return sendError(res, {
-      message: "Failed to fetch tasks",
-    });
-  }
+  return sendSuccess(res, {
+    data: result.tasks,
+    meta: result.meta,
+  });
 }
 
 async function httpGetTaskById(req, res) {
   const userId = req.user.userId;
   const { id } = req.params;
 
-  try {
-    const result = await getTaskById({ userId, id });
+  const result = await getTaskById({ userId, id });
 
-    if (result.error)
-      return sendError(res, { message: result.error, status: result.status });
-
-    return sendSuccess(res, {
-      data: result,
-    });
-  } catch (err) {
-    console.error(err);
-    return sendError(res, { message: "Failed to fetch task" });
-  }
+  return sendSuccess(res, {
+    data: result,
+  });
 }
 
 async function httpCreateTask(req, res) {
   const userId = req.user.userId;
   const taskData = req.body;
 
-  try {
-    const result = await createTask({ userId, taskData });
+  const result = await createTask({ userId, taskData });
 
-    return sendSuccess(res, {
-      data: result,
-      status: 201,
-    });
-  } catch (err) {
-    console.error(err);
-    return sendError(res, { message: "Failed to create task" });
-  }
+  return sendSuccess(res, {
+    data: result,
+    status: 201,
+  });
 }
 
 async function httpUpdateTask(req, res) {
@@ -83,38 +63,22 @@ async function httpUpdateTask(req, res) {
   const { id } = req.params;
   const updates = req.body;
 
-  try {
-    const result = await updateTask({ userId, id, updates });
+  const result = await updateTask({ userId, id, updates });
 
-    if (result.error)
-      return sendError(res, { message: result.error, status: result.status });
-
-    return sendSuccess(res, {
-      data: result,
-    });
-  } catch (err) {
-    console.error(err);
-    return sendError(res, { message: "Failed to update task" });
-  }
+  return sendSuccess(res, {
+    data: result,
+  });
 }
 
 async function httpDeleteTask(req, res) {
   const userId = req.user.userId;
   const { id } = req.params;
 
-  try {
-    const result = await deleteTask({ userId, id });
+  const result = await deleteTask({ userId, id });
 
-    if (result.error)
-      return sendError(res, { message: result.error, status: result.status });
-
-    return sendSuccess(res, {
-      data: result,
-    });
-  } catch (err) {
-    console.error(err);
-    return sendError(res, { message: "Failed to delete task" });
-  }
+  return sendSuccess(res, {
+    data: result,
+  });
 }
 
 module.exports = {

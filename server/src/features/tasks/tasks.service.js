@@ -5,6 +5,7 @@ const {
   updateTask: updateTaskModel,
   deleteTask: deleteTaskModel,
 } = require("./tasks.model");
+const { NotFoundError } = require("../../utils/errors");
 
 async function getAllTasks({
   userId,
@@ -58,7 +59,7 @@ async function getAllTasks({
 async function getTaskById({ userId, id }) {
   const task = await getTaskByIdModel(userId, id);
 
-  if (!task) return { error: "Task not found", status: 404 };
+  if (!task) throw new NotFoundError("Task not found");
 
   return { task };
 }
@@ -72,7 +73,7 @@ async function createTask({ userId, taskData }) {
 async function updateTask({ userId, id, updates }) {
   const task = await updateTaskModel(userId, id, updates);
 
-  if (!task) return { error: "Task not found", status: 404 };
+  if (!task) throw new NotFoundError("Task not found");
 
   return { task };
 }
@@ -80,7 +81,7 @@ async function updateTask({ userId, id, updates }) {
 async function deleteTask({ userId, id }) {
   const task = await deleteTaskModel(userId, id);
 
-  if (!task) return { error: "Task not found", status: 404 };
+  if (!task) throw new NotFoundError("Task not found");
 
   return { task };
 }

@@ -1,12 +1,17 @@
 const { RateLimiterRedis } = require("rate-limiter-flexible");
 const { findUserWithPassword } = require("../features/auth/auth.model");
-const { sendError } = require("../utils/response");
+const { TooManyRequestsError } = require("../utils/errors");
 
 let limiterByUser;
 let limiterByIP;
 
 const MAX_WRONG_ATTEMPTS_BY_USER_PER_MINUTE = 5;
 const MAX_WRONG_ATTEMPTS_BY_IP_PER_HOUR = 100;
+
+function rateLimitMessage(msBeforeNext) {
+  const seconds = Math.ceil(msBeforeNext / 1000);
+  return `Too many login attempts. Try again in ${seconds} seconds.`;
+}
 
 async function initRateLimiters(redisClient) {
   limiterByUser = new RateLimiterRedis({
@@ -37,24 +42,20 @@ async function preLoginRateLimiter(req, res, next) {
     await Promise.all([
       limiterByUser.get(userKey).then((r) => {
         if (r && r.consumedPoints >= MAX_WRONG_ATTEMPTS_BY_USER_PER_MINUTE) {
-          throw { msBeforeNext: r.msBeforeNext };
+          throw new TooManyRequestsError(rateLimitMessage(r.msBeforeNext));
         }
       }),
 
       limiterByIP.get(ipAddr).then((r) => {
         if (r && r.consumedPoints >= MAX_WRONG_ATTEMPTS_BY_IP_PER_HOUR) {
-          throw { msBeforeNext: r.msBeforeNext };
+          throw new TooManyRequestsError(rateLimitMessage(r.msBeforeNext));
         }
       }),
     ]);
 
     next();
   } catch (err) {
-    const seconds = err.msBeforeNext ? Math.ceil(err.msBeforeNext / 1000) : 60;
-    return sendError(res, {
-      message: `Too many login attempts. Try again in ${seconds} seconds.`,
-      status: 429,
-    });
+    next(err);
   }
 }
 

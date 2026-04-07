@@ -1,4 +1,4 @@
-const { sendError } = require("../utils/response");
+const { ValidationError } = require("../utils/errors");
 
 function validate(schema, source = "body") {
   return (req, res, next) => {
@@ -9,11 +9,7 @@ function validate(schema, source = "body") {
     if (!result.success) {
       const issue = result.error.issues[0];
 
-      return sendError(res, {
-        message: issue.message,
-        field: issue.path?.[0] || null,
-        status: 400,
-      });
+      throw new ValidationError(issue.message, issue.path?.[0] || null);
     }
 
     if (source === "query") {
