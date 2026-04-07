@@ -1,4 +1,5 @@
 const Redis = require("ioredis");
+const { RedisNotInitializedError } = require("../utils/errors");
 
 let redisClient;
 
@@ -36,7 +37,7 @@ async function initRedis() {
 
 function getRedisClient() {
   if (!redisClient) {
-    throw new Error("Redis not initialized.  Call initRedis() first.");
+    throw new RedisNotInitializedError();
   }
   return redisClient;
 }
