@@ -101,6 +101,46 @@ http://localhost:8000
 
 ---
 
+## ⚙️ Running with Docker (Development)
+
+1. Make sure Docker Desktop is running.
+
+2. From the project root, build and start the containers:
+
+```bash
+docker-compose up --build
+```
+
+This will start three services:
+
+- ``backend (Node.js app with nodemon)``
+- ``db (PostgreSQL)``
+- ``redis (Redis server, used for caching and rate limiting)``
+
+1. The backend API will be available at:
+
+- ``http://localhost:8000``
+
+1. Stopping containers:
+
+- ``docker-compose down``
+
+Note: docker-compose down stops all services, but persistent volumes (like your Postgres data) are not deleted.
+
+---
+
+1. Postgres environment file (`./docker.env`) must contain the following variables:
+   - `POSTGRES_USER` → database user
+   - `POSTGRES_PASSWORD` → database password
+   - `POSTGRES_DB` → database name
+   *Do not commit this file with real credentials. Use local/dev values.*
+
+2. Environment variables are still required for Docker. Copy your `.env` file into `/server/.env` so the backend and Redis/Postgres connections work correctly.
+
+3. Docker uses a volume mount `./server:/app` for the backend. This allows live code reloads with nodemon when developing inside the container.
+
+4. For production, you can build the Docker image without nodemon and run the server using `node server.js`. This avoids automatic reloads and is the recommended approach for deployment.
+
 ## 📌 API Overview
 
 Base URL:
