@@ -1,0 +1,24 @@
+# Ignore local dependencies; container installs its own
+node_modules/
+
+# Ignore npm debug logs
+npm-debug.log
+
+# Ignore environment files to avoid baking secrets into the image
+.env*
+docker.env
+
+# Ignore Git repository files; not needed inside the container
+.git/
+.gitignore
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE/editor settings
+.vscode/
+*.log
+
+# Optional: coverage reports (from tests)
+coverage/

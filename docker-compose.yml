@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./server # Build from your server Dockerfile
+    ports:
+      - "8000:8000" # Maps container port 8000 → host port 8000
+    env_file:
+      - ./server/.env # Pass all environment variables
+    volumes:
+      - ./server:/app # Mount host code into container
+      - /app/node_modules # Keep container-installed node_modules
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped # Professional practice for reliability
+
+  db:
+    image: postgres:15 # Stable Postgres version
+    env_file:
+      - ./docker.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./server/db:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+
+  redis:
+    image: redis:7 # Stable Redis version
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+# Named volume to persist Postgres data
+volumes:
+  postgres_data:

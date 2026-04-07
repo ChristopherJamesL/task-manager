@@ -48,5 +48,5 @@ CREATE TABLE tasks (
 	CONSTRAINT fk_tasks_list_id
 		FOREIGN KEY(list_id) REFERENCES lists(id) ON DELETE SET NULL,
 	CONSTRAINT tasks_priority_check
-		CHECK (priority IN ('low', 'medium', 'high'));
+		CHECK (priority IN ('low', 'medium', 'high'))
 );
