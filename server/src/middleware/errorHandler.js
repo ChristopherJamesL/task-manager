@@ -1,8 +1,14 @@
+const { logger } = require("../utils/logger");
 const { AppError } = require("../utils/errors");
 
 function errorHandler(err, req, res, next) {
+  const minimalReq = {
+    method: req.method,
+    url: req.url,
+  };
+
   if (!(err instanceof AppError)) {
-    console.error("Unexpected Error: ", err);
+    logger.error({ err, req: minimalReq }, "Unexpected error");
     return res.status(500).json({
       success: false,
       error: {
@@ -10,6 +16,8 @@ function errorHandler(err, req, res, next) {
       },
     });
   }
+
+  logger.error({ err, req: minimalReq }, "Operational error");
 
   return res.status(err.statusCode).json({
     success: false,

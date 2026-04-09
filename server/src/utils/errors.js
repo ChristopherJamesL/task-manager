@@ -5,8 +5,6 @@ class AppError extends Error {
     this.isOperational = true;
     this.field = field;
     Error.captureStackTrace(this, this.constructor);
-
-    console.log("Stack in AppError: ", this.stack);
   }
 }
 

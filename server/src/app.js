@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const { httpLogger } = require("./utils/logger");
 
 const authRouter = require("./features/auth/auth.router");
 const listsRouter = require("./features/lists/lists.router");
@@ -14,7 +15,16 @@ app.use(
     credentials: true,
   }),
 );
+
 app.use(express.json());
+
+app.use(httpLogger);
+
+app.post("/test-body", (req, res) => {
+  // console.log("request method: ", req.method);
+  console.log("req.body in /test-body:", req.body);
+  res.json({ ok: true });
+});
 
 app.use("/api/auth", authRouter);
 app.use("/api/lists", listsRouter);
