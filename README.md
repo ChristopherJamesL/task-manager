@@ -178,6 +178,16 @@ Base URL:
 - Input validation using Zod
 - Structured error and success responses
 
+## 🔧 Logging
+
+- Structured logging is implemented using Pino and Pino HTTP.
+- Request logging includes method, URL, query parameters, and route params.
+- Error logging captures minimal request info (method, url) and the error object with stack trace.
+- Sensitive data (passwords, tokens, headers, request body) is never logged.
+- Logs are categorized by level:
+  - INFO → all completed requests
+  - ERROR → operational and unexpected errors
+
 ## 📈 Future Improvements
 
 - Add automated tests (Jest + Supertest)
