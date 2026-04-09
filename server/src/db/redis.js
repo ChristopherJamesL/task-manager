@@ -1,5 +1,6 @@
 const Redis = require("ioredis");
 const { RedisNotInitializedError } = require("../utils/errors");
+const { logger } = require("../utils/logger");
 
 let redisClient;
 
@@ -29,7 +30,7 @@ async function initRedis() {
       redisClient.once("error", onError);
     });
 
-    console.log("Redis connected...");
+    logger.info("Redis connected...");
   }
 
   return redisClient;

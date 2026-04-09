@@ -3,6 +3,7 @@ const app = require("./app");
 const pool = require("./db/database");
 const { initRedis } = require("./db/redis");
 const { initRateLimiters } = require("./middleware/rateLimiter");
+const { logger } = require("./utils/logger");
 
 const port = process.env.PORT || 8000;
 
@@ -11,17 +12,17 @@ async function startServer() {
     const redisClient = await initRedis();
 
     await pool.query("SELECT 1");
-    console.log("Connected to PostgreSQL...");
+    logger.info("Connected to PostgreSQL...");
 
     await initRateLimiters(redisClient);
 
     const server = http.createServer(app);
 
     server.listen(port, () => {
-      console.log(`Server listening on port ${port}...`);
+      logger.info(`Server listening on port ${port}...`);
     });
   } catch (err) {
-    console.log("Failed to start server", err);
+    logger.error({ err }, "Failed to start server");
     process.exit(1);
   }
 }
