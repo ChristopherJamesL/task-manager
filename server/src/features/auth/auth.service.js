@@ -45,7 +45,10 @@ async function registerUser({ username, email, password }) {
 }
 
 async function signInUser({ identifier, password, ipAddr }) {
-  const user = await findUserWithPassword(identifier);
+  const isEmail = identifier.includes("@");
+  const user = isEmail
+    ? await findUserWithPassword(identifier.toLowerCase())
+    : await findUserWithPassword(identifier);
 
   if (!user) {
     await consumeLoginFail(identifier, ipAddr);

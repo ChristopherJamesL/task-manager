@@ -43,7 +43,12 @@ function getRedisClient() {
   return redisClient;
 }
 
+async function closeRedisClient(client) {
+  if (client) await client.quit();
+}
+
 module.exports = {
   initRedis,
   getRedisClient,
+  closeRedisClient,
 };
