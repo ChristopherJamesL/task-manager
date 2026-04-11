@@ -33,10 +33,7 @@ class ConflictError extends AppError {
 }
 
 class RedisNotInitializedError extends AppError {
-  constructor(
-    message = "Redis not initialized.  Call initRedis() first.",
-    field = null,
-  ) {
+  constructor(message = "Redis not initialized.", field = null) {
     super(message, 500, field);
   }
 }
