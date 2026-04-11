@@ -34,18 +34,25 @@ A full-stack task management application backend built with Node.js and Express,
 
 ```text
 root/
-├── client/                # React frontend (in progress)
+├── client/                     # React frontend (in progress)
 ├── server/
 │   ├── src/
-│   │   ├── db/            # Database & Redis clients
-│   │   ├── features/      # Feature-based modules
+│   │   ├── db/                 # PostgreSQL + Redis clients
+│   │   ├── features/          # Feature-based modules
 │   │   │   ├── auth/
 │   │   │   ├── tasks/
 │   │   │   └── lists/
-│   │   ├── middleware/    # Express middleware (auth, rate limiting, etc.)
-│   │   ├── utils/         # Shared utilities (responses, pagination, etc.)
-│   │   ├── app.js         # Express app configuration
-│   │   └── server.js      # Server startup (DB + Redis initialization)
+│   │   ├── middleware/        # Express middleware (auth, rate limiting, etc.)
+│   │   ├── utils/             # Shared utilities (responses, logging, pagination, etc.)
+│   │   ├── app.js             # Express app configuration
+│   │   └── server.js          # Server startup (DB + Redis initialization)
+│   │
+│   └── tests/                 # Integration tests (Jest + Supertest)
+│       ├── auth/
+│       ├── tasks/
+│       ├── lists/
+│       └── setup/             # Test setup (app, db helpers, redis setup, global test config)
+│
 └── README.md
 ```
 
@@ -76,7 +83,7 @@ cd server
 npm install
 ```
 
-1. Set up environment variables  
+2. Set up environment variables  
   Create a `.env` file in `/server`:
 
 ```env
@@ -86,7 +93,7 @@ REDIS_URL=your_redis_connection_string
 JWT_SECRET=your_jwt_secret
 ```
 
-1. Run the server  
+3. Run the server  
   From the project root:
 
 ```bash
@@ -117,11 +124,11 @@ This will start three services:
 - ``db (PostgreSQL)``
 - ``redis (Redis server, used for caching and rate limiting)``
 
-1. The backend API will be available at:
+3. The backend API will be available at:
 
 - ``http://localhost:8000``
 
-1. Stopping containers:
+4. Stopping containers:
 
 - ``docker-compose down``
 
@@ -187,6 +194,33 @@ Base URL:
 - Logs are categorized by level:
   - INFO → all completed requests
   - ERROR → operational and unexpected errors
+
+## 🧪 Testing
+
+This project uses automated integration tests with Jest and Supertest.
+
+### Setup
+
+Create a `.env.test` file in the `/server` directory with the following variables:
+
+  ```env
+  DATABASE_URL=your_test_database_url 
+  REDIS_URL=your_test_redis_url 
+  JWT_SECRET=your_test_secret
+  ```
+
+- Ensure that the test database is separate from your development database.
+
+### Running Tests
+
+```bash
+npm test
+```
+
+- Tests run in watch mode by default.
+- The test suite resets the database and clears Redis before each test.
+- Tests are designed to run against a real database and Redis instance.
+- Using a dedicated test environment prevents conflicts with development data.
 
 ## 📈 Future Improvements
 
