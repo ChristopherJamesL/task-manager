@@ -20,12 +20,12 @@ async function registerUser({ username, email, password }) {
   const normalizedEmail = email.toLowerCase().trim();
 
   try {
-    return await db.withTransaction(async () => {
+    return await db.withTransaction(async (client) => {
       const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
-      const user = await createUser(username, normalizedEmail);
+      const user = await createUser(username, normalizedEmail, client);
 
-      await createAuth(user.id, hashedPassword);
+      await createAuth(user.id, hashedPassword, client);
 
       return user;
     });

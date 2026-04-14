@@ -1,21 +1,23 @@
 const db = require("../../db/database");
 
-async function createUser(username, email) {
+async function createUser(username, email, client) {
   const result = await db.query(
     `INSERT INTO users (username, email) 
      VALUES ($1, $2)
      RETURNING id, username, email`,
     [username, email],
+    client,
   );
 
   return result.rows[0];
 }
 
-async function createAuth(userId, passwordHash) {
+async function createAuth(userId, passwordHash, client) {
   await db.query(
     `INSERT INTO authentication (user_id, password_hash)
      VALUES ($1, $2)`,
     [userId, passwordHash],
+    client,
   );
 }
 

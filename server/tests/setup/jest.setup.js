@@ -6,36 +6,25 @@ require("dotenv").config({
 
 const { resetDatabase, closeDatabase } = require("./db");
 const {
-  startTestTransaction,
-  rollbackTestTransaction,
-} = require("./dbSession");
-const { setTestClient, clearTestClient } = require("../../src/db/database");
-const {
   getRedisClient,
   initRedis,
   closeRedisClient,
 } = require("../../src/db/redis");
+const { initRateLimiters } = require("../../src/middleware/rateLimiter");
+
+let redisClient;
 
 beforeAll(async () => {
   await resetDatabase();
-  await initRedis();
+  redisClient = await initRedis();
+  await initRateLimiters(redisClient);
 });
 
 beforeEach(async () => {
-  const client = await startTestTransaction();
-  setTestClient(client);
-
-  const redisClient = await getRedisClient();
   await redisClient.flushdb();
-});
-
-afterEach(async () => {
-  await rollbackTestTransaction();
-
-  clearTestClient();
 });
 
 afterAll(async () => {
   await closeDatabase();
-  await closeRedisClient(getRedisClient());
+  if (redisClient) await closeRedisClient(getRedisClient());
 });
