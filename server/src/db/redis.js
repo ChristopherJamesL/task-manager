@@ -8,7 +8,7 @@ async function initRedis() {
   if (!redisClient) {
     redisClient = new Redis(process.env.REDIS_URL);
 
-    redisClient.on("error", (err) => console.error("Redis error: ", err));
+    redisClient.on("error", (err) => logger.error("Redis error: ", err));
 
     await new Promise((resolve, reject) => {
       function onReady() {

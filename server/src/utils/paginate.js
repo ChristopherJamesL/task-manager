@@ -1,4 +1,4 @@
-const pool = require("../db/database");
+const { pool } = require("../db/database");
 
 async function paginate({ dataQuery, dataParams = [] }) {
   const dataResult = await pool.query(dataQuery, dataParams);

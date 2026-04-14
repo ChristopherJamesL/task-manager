@@ -1,4 +1,4 @@
-const pool = require("../../db/database");
+const db = require("../../db/database");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const {
@@ -18,29 +18,22 @@ const SALT_ROUNDS = 10;
 
 async function registerUser({ username, email, password }) {
   const normalizedEmail = email.toLowerCase().trim();
-  const client = await pool.connect();
 
   try {
-    await client.query("BEGIN");
+    return await db.withTransaction(async () => {
+      const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
-    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+      const user = await createUser(username, normalizedEmail);
 
-    const user = await createUser(client, username, normalizedEmail);
+      await createAuth(user.id, hashedPassword);
 
-    await createAuth(client, user.id, hashedPassword);
-
-    await client.query("COMMIT");
-
-    return user;
+      return user;
+    });
   } catch (err) {
-    await client.query("ROLLBACK");
-
     if (err.code === "23505") {
       throw new ConflictError("Username or email already exists");
     }
     throw err;
-  } finally {
-    client.release();
   }
 }
 

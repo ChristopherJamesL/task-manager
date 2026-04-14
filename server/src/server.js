@@ -1,6 +1,12 @@
+const path = require("path");
+
+require("dotenv").config({
+  path: path.resolve(__dirname, "../.env"),
+});
+
 const http = require("node:http");
-const app = require("./app");
-const pool = require("./db/database");
+const createApp = require("./app");
+const { pool } = require("./db/database");
 const { initRedis } = require("./db/redis");
 const { initRateLimiters } = require("./middleware/rateLimiter");
 const { logger } = require("./utils/logger");
@@ -15,6 +21,8 @@ async function startServer() {
     logger.info("Connected to PostgreSQL...");
 
     await initRateLimiters(redisClient);
+
+    const app = createApp();
 
     const server = http.createServer(app);
 

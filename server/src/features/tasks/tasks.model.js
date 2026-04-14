@@ -1,4 +1,4 @@
-const pool = require("../../db/database");
+const { pool } = require("../../db/database");
 const paginate = require("../../utils/paginate");
 
 async function getAllTasks(userId, listId, filters = {}, cursor, limit) {
