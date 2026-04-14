@@ -7,31 +7,34 @@ const listsRouter = require("./features/lists/lists.router");
 const tasksRouter = require("./features/tasks/tasks.router");
 const errorHandler = require("./middleware/errorHandler");
 
-const app = express();
+function createApp() {
+  const app = express();
 
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-    credentials: true,
-  }),
-);
+  app.use(
+    cors({
+      origin: "http://localhost:3000",
+      credentials: true,
+    }),
+  );
 
-app.use(express.json());
+  app.use(express.json());
+  app.use(httpLogger);
 
-app.use(httpLogger);
+  app.use("/api/auth", authRouter);
+  app.use("/api/lists", listsRouter);
+  app.use("/api/tasks", tasksRouter);
 
-app.use("/api/auth", authRouter);
-app.use("/api/lists", listsRouter);
-app.use("/api/tasks", tasksRouter);
+  app.get("/", (req, res) => {
+    res.send("Hello World");
+  });
 
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
+  app.use((req, res) => {
+    res.status(404).json({ success: false, message: "Route not found" });
+  });
 
-app.use((req, res) => {
-  res.status(404).json({ success: false, message: "Route not found" });
-});
+  app.use(errorHandler);
 
-app.use(errorHandler);
+  return app;
+}
 
-module.exports = app;
+module.exports = createApp;
