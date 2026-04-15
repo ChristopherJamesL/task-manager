@@ -13,8 +13,6 @@ async function closeDatabase() {
   await pool.end();
 }
 
-console.log("TEST DB POOL:", process.env.DATABASE_URL);
-
 module.exports = {
   resetDatabase,
   closeDatabase,

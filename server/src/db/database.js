@@ -16,7 +16,7 @@ async function withTransaction(callback) {
   try {
     await client.query("BEGIN");
 
-    const result = await callback(client); // you added client here
+    const result = await callback(client);
 
     await client.query("COMMIT");
 
@@ -28,8 +28,6 @@ async function withTransaction(callback) {
     client.release();
   }
 }
-
-console.log("APP DB POOL:", process.env.DATABASE_URL);
 
 module.exports = {
   pool,

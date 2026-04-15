@@ -33,6 +33,8 @@ async function initRedis() {
     logger.info("Redis connected...");
   }
 
+  redisClient.connectionId = Math.random().toString(36).slice(2);
+
   return redisClient;
 }
 
