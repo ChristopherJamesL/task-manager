@@ -17,13 +17,11 @@ const {
 const SALT_ROUNDS = 10;
 
 async function registerUser({ username, email, password }) {
-  const normalizedEmail = email.toLowerCase().trim();
-
   try {
     return await db.withTransaction(async (client) => {
       const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
-      const user = await createUser(username, normalizedEmail, client);
+      const user = await createUser(username, email, client);
 
       await createAuth(user.id, hashedPassword, client);
 
@@ -38,10 +36,7 @@ async function registerUser({ username, email, password }) {
 }
 
 async function signInUser({ identifier, password, ipAddr }) {
-  const isEmail = identifier.includes("@");
-  const user = isEmail
-    ? await findUserWithPassword(identifier.toLowerCase())
-    : await findUserWithPassword(identifier);
+  const user = await findUserWithPassword(identifier);
 
   if (!user) {
     await consumeLoginFail(identifier, ipAddr);

@@ -1,5 +1,6 @@
 const { RateLimiterRedis } = require("rate-limiter-flexible");
 const { findUserWithPassword } = require("../features/auth/auth.model");
+const { normalizeIdentifier } = require("../utils/normalizeIdentifier");
 const { TooManyRequestsError } = require("../utils/errors");
 
 let limiterByUser;
@@ -19,7 +20,6 @@ async function initRateLimiters(redisClient) {
     keyPrefix: "login_fail_user",
     points: MAX_WRONG_ATTEMPTS_BY_USER_PER_MINUTE,
     duration: 60,
-    blockDuration: 60 * 5,
   });
 
   limiterByIP = new RateLimiterRedis({
@@ -27,7 +27,6 @@ async function initRateLimiters(redisClient) {
     keyPrefix: "login_fail_ip",
     points: MAX_WRONG_ATTEMPTS_BY_IP_PER_HOUR,
     duration: 60 * 60,
-    blockDuration: 60 * 15,
   });
 }
 
@@ -37,7 +36,7 @@ async function preLoginRateLimiter(req, res, next) {
 
   try {
     const user = await findUserWithPassword(identifier);
-    const userKey = user ? `user:${user.id}` : `user:${identifier}`;
+    const userKey = user ? `user:${user.id}` : `identifier:${identifier}`;
 
     await Promise.all([
       limiterByUser.get(userKey).then((r) => {
@@ -55,6 +54,9 @@ async function preLoginRateLimiter(req, res, next) {
 
     next();
   } catch (err) {
+    if (err.msBeforeNext) {
+      return next(new TooManyRequestsError(rateLimitMessage(err.msBeforeNext)));
+    }
     next(err);
   }
 }
