@@ -225,7 +225,6 @@ npm test
 
 ## 📈 Future Improvements
 
-- Add automated tests (Jest + Supertest)
 - API documentation (Swagger/OpenAPI)
 - Redis caching for frequently accessed data
 - Background jobs (task reminders, cleanup)

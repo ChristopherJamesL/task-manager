@@ -1,6 +1,7 @@
 const request = require("supertest");
 const createApp = require("../setup/app");
 const { createUser } = require("../setup/factory");
+const { registerUser, signInUser } = require("../setup/authHelper");
 
 const app = createApp();
 
@@ -8,14 +9,14 @@ describe("Auth - Me", () => {
   test("It should return me", async () => {
     const userData = createUser();
 
-    await request(app).post("/api/auth/register").send(userData);
+    await registerUser(userData);
 
-    const signIn = await request(app).post("/api/auth/signin").send({
+    const signInResponse = await signInUser({
       identifier: userData.email,
       password: userData.password,
     });
 
-    const token = signIn.body.data.token;
+    const token = signInResponse.body.data.token;
 
     const response = await request(app)
       .get("/api/auth/me")
