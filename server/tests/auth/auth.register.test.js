@@ -1,17 +1,12 @@
-const request = require("supertest");
-const createApp = require("../setup/app");
 const db = require("../../src/db/database");
 const { createUser } = require("../setup/factory");
-
-const app = createApp();
+const { registerUser } = require("../setup/authHelper");
 
 describe("Auth - Register", () => {
   test("It should register a new user successfully", async () => {
     const userData = createUser();
 
-    const response = await request(app)
-      .post("/api/auth/register")
-      .send(userData);
+    const response = await registerUser(userData);
 
     expect(response.statusCode).toBe(201);
 
@@ -35,9 +30,9 @@ describe("Auth - Register", () => {
       email: user1.email,
     });
 
-    await request(app).post("/api/auth/register").send(user1);
+    await registerUser(user1);
 
-    const response = await request(app).post("/api/auth/register").send(user2);
+    const response = await registerUser(user2);
 
     expect(response.statusCode).toBe(409);
     expect(response.body.success).toBe(false);
@@ -53,9 +48,9 @@ describe("Auth - Register", () => {
       email: "different@example.com",
     });
 
-    await request(app).post("/api/auth/register").send(user1);
+    await registerUser(user1);
 
-    const response = await request(app).post("/api/auth/register").send(user2);
+    const response = await registerUser(user2);
 
     expect(response.statusCode).toBe(409);
     expect(response.body.success).toBe(false);

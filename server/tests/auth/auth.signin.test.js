@@ -1,16 +1,13 @@
-const request = require("supertest");
-const createApp = require("../setup/app");
 const { createUser } = require("../setup/factory");
-
-const app = createApp();
+const { registerUser, signInUser } = require("../setup/authHelper");
 
 describe("Auth - Sign In", () => {
   test("It should sign in an existing user with email", async () => {
     const userData = createUser();
 
-    await request(app).post("/api/auth/register").send(userData);
+    await registerUser(userData);
 
-    const response = await request(app).post("/api/auth/signin").send({
+    const response = await signInUser({
       identifier: userData.email,
       password: userData.password,
     });
@@ -24,9 +21,10 @@ describe("Auth - Sign In", () => {
 
   test("It should sign in an existing user with username", async () => {
     const userData = createUser();
-    await request(app).post("/api/auth/register").send(userData);
 
-    const response = await request(app).post("/api/auth/signin").send({
+    await registerUser(userData);
+
+    const response = await signInUser({
       identifier: userData.username,
       password: userData.password,
     });
@@ -41,9 +39,9 @@ describe("Auth - Sign In", () => {
   test("It should not signin with incorrect password", async () => {
     const userData = createUser();
 
-    await request(app).post("/api/auth/register").send(userData);
+    await registerUser(userData);
 
-    const response = await request(app).post("/api/auth/signin").send({
+    const response = await signInUser({
       identifier: userData.email,
       password: "wrongPassword",
     });
@@ -54,7 +52,7 @@ describe("Auth - Sign In", () => {
   });
 
   test("It should not sign in with non-existant user", async () => {
-    const response = await request(app).post("/api/auth/signin").send({
+    const response = await signInUser({
       identifier: "noUser@example.com",
       password: "123",
     });
@@ -67,7 +65,7 @@ describe("Auth - Sign In", () => {
   test("It should rate limit repeated failed sigin attempts", async () => {
     const userData = createUser();
 
-    await request(app).post("/api/auth/register").send(userData);
+    await registerUser(userData);
 
     const payload = {
       identifier: userData.email,
@@ -75,10 +73,10 @@ describe("Auth - Sign In", () => {
     };
 
     for (let i = 0; i < 5; i++) {
-      await request(app).post("/api/auth/signin").send(payload);
+      await signInUser(payload);
     }
 
-    const response = await request(app).post("/api/auth/signin").send(payload);
+    const response = await signInUser(payload);
 
     expect(response.statusCode).toBe(429);
   });

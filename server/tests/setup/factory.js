@@ -1,4 +1,5 @@
 let counter = 0;
+let listCounter = 0;
 
 function createUser(overrides = {}) {
   counter++;
@@ -11,6 +12,13 @@ function createUser(overrides = {}) {
   };
 }
 
+function createListName(name = "list") {
+  listCounter++;
+
+  return `${name}${listCounter}`;
+}
+
 module.exports = {
   createUser,
+  createListName,
 };
