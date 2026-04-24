@@ -14,7 +14,7 @@ async function createList({ name, token }) {
     });
 }
 
-async function getAllLists({ token }) {
+async function getAllLists({ token } = {}) {
   return request(app).get("/api/lists").set("Authorization", `Bearer ${token}`);
 }
 

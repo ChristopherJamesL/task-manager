@@ -30,7 +30,9 @@ async function httpGetAllTasks(req, res) {
   const result = await getAllTasks({ userId, ...res.locals.validatedQuery });
 
   return sendSuccess(res, {
-    data: result.tasks,
+    data: {
+      tasks: result.tasks,
+    },
     meta: result.meta,
   });
 }

@@ -55,7 +55,7 @@ describe("Lists - Get All Lists", () => {
   });
 
   test("It should return 401 if no token provided", async () => {
-    const response = await request(app).get("/api/lists");
+    const response = await getAllLists();
 
     expect(response.statusCode).toBe(401);
   });

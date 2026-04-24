@@ -80,12 +80,37 @@ async function getTaskById(userId, taskId) {
 async function createTask(userId, taskData) {
   const { listId, title, description, priority, dueDate } = taskData;
 
-  const result = await pool.query(
-    `INSERT INTO tasks (user_id, list_id, title, description, priority, due_date)
-         VALUES ($1, $2, $3, $4, $5, $6)
-         RETURNING *`,
-    [userId, listId, title, description, priority, dueDate],
-  );
+  const columns = ["user_id", "list_id", "title"];
+  const values = [userId, listId, title];
+  const placeholders = ["$1", "$2", "$3"];
+
+  let index = 4;
+
+  if (description !== undefined) {
+    columns.push("description");
+    values.push(description);
+    placeholders.push(`$${index++}`);
+  }
+
+  if (priority !== undefined) {
+    columns.push("priority");
+    values.push(priority);
+    placeholders.push(`$${index++}`);
+  }
+
+  if (dueDate !== undefined) {
+    columns.push("due_date");
+    values.push(dueDate);
+    placeholders.push(`$${index++}`);
+  }
+
+  const query = `
+    INSERT INTO tasks (${columns.join(", ")})
+    VALUES (${placeholders.join(", ")})
+    RETURNING *
+    `;
+
+  const result = await pool.query(query, values);
 
   return result.rows[0];
 }
