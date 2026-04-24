@@ -19,6 +19,7 @@ const order = z.enum(["asc", "desc"]).default("desc");
 const priority = z.enum(["low", "medium", "high"]);
 const sortBy = z.enum(["createdAt", "dueDate"]).default("createdAt");
 const title = z.string().min(1).max(255);
+const isCompletedPatch = z.string().transform(zodRequestQueryBoolean);
 
 const getTasksQuerySchema = z.object({
   cursorId: cursorId.optional(),
@@ -45,12 +46,12 @@ const updateTaskSchema = z
   .object({
     description: description.optional(),
     dueDate: dueDate.optional(),
-    isCompleted: isCompleted.optional(),
+    isCompleted: isCompletedPatch.optional(),
     priority: priority.optional(),
     title: title.optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
-    message: "At least one field must be provided",
+    message: "At least one field must be provideddddd",
   });
 
 const taskIdParamSchema = z.object({

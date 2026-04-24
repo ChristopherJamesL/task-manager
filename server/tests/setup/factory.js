@@ -1,5 +1,12 @@
 let counter = 0;
 let listCounter = 0;
+let taskCounter = 0;
+
+function resetCounters() {
+  counter = 0;
+  listCounter = 0;
+  taskCounter = 0;
+}
 
 function createUser(overrides = {}) {
   counter++;
@@ -18,7 +25,36 @@ function createListName(name = "list") {
   return `${name}${listCounter}`;
 }
 
+function createTaskData({ listId, overrides = {} }) {
+  taskCounter++;
+
+  return {
+    title: `title${taskCounter}`,
+    listId,
+    ...overrides,
+  };
+}
+
+function createTaskUpdateData({
+  title,
+  description,
+  priority,
+  isCompleted,
+  dueDate,
+}) {
+  return {
+    ...(title !== undefined && { title }),
+    ...(description !== undefined && { description }),
+    ...(priority !== undefined && { priority }),
+    ...(isCompleted !== undefined && { isCompleted }),
+    ...(dueDate !== undefined && { dueDate }),
+  };
+}
+
 module.exports = {
   createUser,
   createListName,
+  createTaskData,
+  createTaskUpdateData,
+  resetCounters,
 };
