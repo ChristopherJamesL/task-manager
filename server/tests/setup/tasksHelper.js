@@ -57,6 +57,12 @@ async function updateTask({ taskId, token, taskUpdateData = {} } = {}) {
     .send(taskUpdateData);
 }
 
+async function deleteTask({ taskId, token }) {
+  return request(app)
+    .delete(`/api/tasks/${taskId}`)
+    .set("Authorization", `Bearer ${token}`);
+}
+
 module.exports = {
   createTask,
   getAllTasks,
@@ -64,4 +70,5 @@ module.exports = {
   getTaskById,
   createListAndTaskAfterSignIn,
   updateTask,
+  deleteTask,
 };

@@ -1,10 +1,6 @@
-const request = require("supertest");
-const { createUser, createListName } = require("../setup/factory");
-const createApp = require("../setup/app");
+const { createListName } = require("../setup/factory");
 const { createAuthenticatedUser } = require("../setup/authHelper");
 const { createList, getAllLists } = require("../setup/listsHelper");
-
-const app = createApp();
 
 describe("Lists - Get All Lists", () => {
   test("It should return empty array when no list exists", async () => {

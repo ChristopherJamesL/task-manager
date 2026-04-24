@@ -1,7 +1,5 @@
 const { createAuthenticatedUser } = require("../setup/authHelper");
-const { createList } = require("../setup/listsHelper");
 const {
-  createTask,
   getTaskById,
   createListAndTaskAfterSignIn,
 } = require("../setup/tasksHelper");
