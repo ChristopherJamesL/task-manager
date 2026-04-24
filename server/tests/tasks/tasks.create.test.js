@@ -4,8 +4,6 @@ const { createTask } = require("../setup/tasksHelper");
 const { createTaskData } = require("../setup/factory");
 
 describe("Tasks - Create", () => {
-  // create 1 task, no creating in another users tasks ,no token = 401,
-  //  requires title, requires listId
   test("It should create one task successfully", async () => {
     const { token } = await createAuthenticatedUser();
 

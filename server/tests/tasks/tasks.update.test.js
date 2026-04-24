@@ -1,14 +1,9 @@
-const request = require("supertest");
-const createApp = require("../setup/app");
 const { createAuthenticatedUser } = require("../setup/authHelper");
-const { createList } = require("../setup/listsHelper");
 const {
   createListAndTaskAfterSignIn,
   updateTask,
 } = require("../setup/tasksHelper");
 const { createTaskUpdateData } = require("../setup/factory");
-
-const app = createApp();
 
 describe("Tasks - Update", () => {
   test("It should successfully update a single field", async () => {
