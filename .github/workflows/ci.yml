@@ -49,5 +49,11 @@ jobs:
       - name: Install server dependencies
         run: npm install --prefix server
 
+      - name: Run database schema
+        run: psql $DATABASE_URL -f server/db/01_schema.sql
+
+      - name: Run database indexes
+        run: psql $DATABASE_URL -f server/db/02_indexes.sql
+
       - name: Run tests
         run: npm run test:server
