@@ -209,19 +209,6 @@ The test suite covers full API flows including:
 - Input validation using Zod schemas
 - Authorization and error handling (401, 404, validation errors)
 
-## ⚙️ CI/CD
-
-This project uses GitHub Actions for continuous integration.
-
-On every push and pull request, the CI pipeline:
-
-- Spins up a PostgreSQL 16 container
-- Spins up a Redis 7 container
-- Runs database schema and index initialization
-- Executes the full Jest + Supertest integration test suite
-
-This ensures all API features are tested against a real database environment in isolation.
-
 ### Setup
 
 Create a `.env.test` file in the `/server` directory with the following variables:
@@ -243,6 +230,19 @@ npm test
 - The test suite resets the database before each suite, and clears Redis before each test.
 - Tests are designed to run against a real database and Redis instance.
 - Using a dedicated test environment prevents conflicts with development data.
+
+## ⚙️ CI/CD
+
+This project uses GitHub Actions for continuous integration.
+
+On every push and pull request, the CI pipeline:
+
+- Spins up a PostgreSQL 16 container
+- Spins up a Redis 7 container
+- Runs database schema and index initialization
+- Executes the full Jest + Supertest integration test suite
+
+This ensures all API features are tested against a real database environment in isolation.
 
 ## 📈 Future Improvements
 
