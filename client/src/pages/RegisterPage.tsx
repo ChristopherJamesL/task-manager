@@ -1,0 +1,63 @@
+import { useState } from "react";
+import { registerFlow } from "../api/auth/auth.flow";
+import { useAuth } from "../contexts/AuthContext";
+import AuthCard from "../components/AuthCard";
+import Button from "../components/Button";
+import Input from "../components/Input";
+
+export default function RegisterPage({ onSwitch }: { onSwitch: () => void }) {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const { signIn } = useAuth();
+
+  const handleRegister = async () => {
+    try {
+      setLoading(true);
+
+      const user = await registerFlow({ username, email, password }, signIn);
+
+      console.log("Registered + logged in: ", user);
+    } catch (err) {
+      console.log("Register failed: ", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <AuthCard>
+      <h1 className="text-xl font-semibold mb-4">Register</h1>
+      <Input
+        placeholder="Username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+
+      <Input
+        placeholder="Email"
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+
+      <Input
+        placeholder="Password"
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <Button onClick={handleRegister} disabled={loading}>
+        Register
+      </Button>
+      <p className="mt-3 text-sm">
+        Already have an account?{" "}
+        <button className="text-blue-600 cursor-pointer" onClick={onSwitch}>
+          Sign in
+        </button>
+      </p>
+    </AuthCard>
+  );
+}

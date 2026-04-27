@@ -1,17 +1,29 @@
-# Task Manager API
+# Task Manager (Full Stack Application)
 
-A full-stack task management application backend built with Node.js and Express, featuring authentication, list organization, and advanced task querying (filtering, sorting, and cursor-based pagination).
+A full-stack task management application built with Node.js, Express, PostgreSQL, and React.
 
 ---
 
 ## 🚀 Tech Stack
 
-- **Backend:** Node.js, Express
-- **Database:** PostgreSQL
-- **Caching / Rate Limiting:** Redis (ioredis + rate-limiter-flexible)
-- **Validation:** Zod
-- **Authentication:** JWT (Bearer tokens)
-- **Architecture:** Feature-based modular structure
+### Frontend
+
+- React
+- TypeScript
+- TailwindCSS
+
+### Backend
+
+- Node.js
+- Express
+- Zod (validation)
+- JWT authentication
+
+### Database / Infrastructure
+
+- PostgreSQL
+- Redis (rate limiting + caching)
+- Docker (development environment)
 
 ---
 
@@ -31,11 +43,30 @@ A full-stack task management application backend built with Node.js and Express,
 
 ---
 
+## 💻 Frontend (React)
+
+Located in `/client`
+
+### Current Features (WIP)
+
+- Sign in / register flows
+- Auth context (token-based authentication)
+- Protected dashboard layout
+- Navbar with logout functionality
+
+### Architecture Notes
+
+- Auth state managed via React Context
+- API layer separated into `auth.flow.ts` and `auth.api.ts`
+- Token stored in localStorage
+
+---
+
 ## 📁 Project Structure
 
 ```text
 root/
-├── client/                     # React frontend (in progress)
+├── client/                     # React frontend (auth + UI in progress)
 ├── server/
 │   ├── src/
 │   │   ├── db/                 # PostgreSQL + Redis clients
@@ -61,7 +92,7 @@ root/
 
 ## 🧠 Architecture Notes
 
-- Uses a feature-based structure, where each feature (tasks, auth, lists) contains its own:
+- Feature-based backend architecture (auth, tasks, lists separated by modules):
   - router
   - controller
   - model
@@ -149,7 +180,7 @@ Note: docker-compose down stops all services, but persistent volumes (like your 
 
 4. For production, you can build the Docker image without nodemon and run the server using `node server.js`. This avoids automatic reloads and is the recommended approach for deployment.
 
-## 📌 API Overview
+## 📌 Backend API Overview
 
 Base URL:
 
