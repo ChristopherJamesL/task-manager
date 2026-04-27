@@ -1,5 +1,5 @@
-import { httpSignIn, httpLogout } from "./auth.api";
-import type { SigninInput, TokenType } from "./auth.types";
+import { httpSignIn, httpLogout, httpRegister } from "./auth.api";
+import type { RegisterInput, SigninInput, TokenType } from "./auth.types";
 import type { SignInType, LogoutType } from "../../contexts/AuthContext.types";
 
 export const signInFlow = async (data: SigninInput, signIn: SignInType) => {
@@ -18,4 +18,15 @@ export const logoutFlow = async (token: TokenType, logout: LogoutType) => {
   logout();
 
   return response;
+};
+
+export const registerFlow = async (data: RegisterInput, signIn: SignInType) => {
+  await httpRegister(data);
+
+  const user = await signInFlow(
+    { identifier: data.email, password: data.password },
+    signIn,
+  );
+
+  return user;
 };

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { getToken, removeToken, setToken } from "../api/auth/auth.token";
 import type { AuthContextType } from "./AuthContext.types";
 
@@ -32,7 +32,6 @@ export function useAuth() {
   if (!context) {
     throw new Error("useAuth must be used within AuthProvider");
   }
-  // console.log("use auth context: ", context);
 
   return context;
 }
