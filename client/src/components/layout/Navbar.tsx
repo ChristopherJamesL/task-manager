@@ -1,25 +1,15 @@
 import { useState } from "react";
-import { getToken } from "../api/auth/auth.token";
-import { logoutFlow } from "../api/auth/auth.flow";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../features/auth/context/AuthContext";
 
-type NavbarPropsType = {
-  isAuthenticated: boolean;
-};
-
-export default function Navbar({ isAuthenticated }: NavbarPropsType) {
+export default function Navbar() {
   const [isLoading, setIsLoading] = useState(false);
-  const { logout } = useAuth();
-
-  const token = getToken();
+  const { authStatus, logout } = useAuth();
 
   const handleSignout = async () => {
     try {
       setIsLoading(true);
 
-      const response = await logoutFlow(token, logout);
-
-      console.log(response.data.message);
+      await logout();
     } catch (err) {
       console.log("Failed to log out: ", err);
     } finally {
@@ -28,10 +18,20 @@ export default function Navbar({ isAuthenticated }: NavbarPropsType) {
   };
 
   return (
-    <div style={{ borderBottom: "1px solid #ccc", padding: "10px" }}>
+    <div
+      className="
+        flex 
+        min-w-screen  
+        p-2 
+        border-b 
+        border-b-gray-300 
+        items-center
+        justify-between 
+        "
+    >
       <span className="text-blue-500 text-3xl">Task Manager</span>
-      <span style={{ float: "right" }}>
-        {isAuthenticated ? (
+      <span>
+        {authStatus === "authenticated" ? (
           <button
             className="cursor-pointer"
             onClick={handleSignout}

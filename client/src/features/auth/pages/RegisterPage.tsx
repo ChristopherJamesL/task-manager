@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { registerFlow } from "../api/auth/auth.flow";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import AuthCard from "../components/AuthCard";
-import Button from "../components/Button";
-import Input from "../components/Input";
+import Button from "../../../components/Button";
+import Input from "../../../components/Input";
 
 export default function RegisterPage({ onSwitch }: { onSwitch: () => void }) {
   const [username, setUsername] = useState("");
@@ -11,13 +10,13 @@ export default function RegisterPage({ onSwitch }: { onSwitch: () => void }) {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { signIn } = useAuth();
+  const { register } = useAuth();
 
   const handleRegister = async () => {
     try {
       setLoading(true);
 
-      const user = await registerFlow({ username, email, password }, signIn);
+      const user = await register({ username, email, password });
 
       console.log("Registered + logged in: ", user);
     } catch (err) {
@@ -32,6 +31,7 @@ export default function RegisterPage({ onSwitch }: { onSwitch: () => void }) {
       <h1 className="text-xl font-semibold mb-4">Register</h1>
       <Input
         placeholder="Username"
+        type="username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
       />
