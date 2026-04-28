@@ -7,6 +7,8 @@ import "./index.css";
 
 const queryClient = new QueryClient();
 
+//ruleset commit
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
