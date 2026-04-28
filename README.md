@@ -59,24 +59,24 @@ root/
 │       ├── components/         # shared UI (Button, Input, Layout)
 │       ├── api/client/         # axios instance
 │       ├── App.tsx
-│       └── main.tsx                    # React frontend (auth + UI in progress)
+│       └── main.tsx            # React frontend (auth + UI in progress)
 ├── server/
 │   ├── src/
 │   │   ├── db/                 # PostgreSQL + Redis clients
-│   │   ├── features/          # Feature-based modules
+│   │   ├── features/           # Feature-based modules
 │   │   │   ├── auth/
 │   │   │   ├── tasks/
 │   │   │   └── lists/
-│   │   ├── middleware/        # Express middleware (auth, rate limiting, etc.)
-│   │   ├── utils/             # Shared utilities (responses, logging, pagination, etc.)
-│   │   ├── app.js             # Express app configuration
-│   │   └── server.js          # Server startup (DB + Redis initialization)
+│   │   ├── middleware/         # Express middleware (auth, rate limiting, etc.)
+│   │   ├── utils/              # Shared utilities (responses, logging, pagination, etc.)
+│   │   ├── app.js              # Express app configuration
+│   │   └── server.js           # Server startup (DB + Redis initialization)
 │   │
-│   └── tests/                 # Integration tests (Jest + Supertest)
+│   └── tests/                  # Integration tests (Jest + Supertest)
 │       ├── auth/
 │       ├── tasks/
 │       ├── lists/
-│       └── setup/             # Test setup (app, db helpers, redis setup, global test config)
+│       └── setup/              # Test setup (app, db helpers, redis setup, global test config)
 │
 └── README.md
 ```
