@@ -15,9 +15,21 @@ export type User = {
   email: string;
 };
 
-export type AuthResponse = {
+export type SignInResponse = {
   token: string;
   user: User;
+};
+
+export type RegisterResponse = {
+  user: User;
+};
+
+export type MeResponse = {
+  user: User;
+};
+
+export type LogoutResponse = {
+  message: string;
 };
 
 export type TokenType = string | null;

@@ -10,6 +10,7 @@ A full-stack task management application built with Node.js, Express, PostgreSQL
 
 - React
 - TypeScript
+- React Query (TanStack Query) *(planned / in progress)*
 - TailwindCSS
 
 ### Backend
@@ -43,52 +44,91 @@ A full-stack task management application built with Node.js, Express, PostgreSQL
 
 ---
 
-## 💻 Frontend (React)
-
-Located in `/client`
-
-### Current Features (WIP)
-
-- Sign in / register flows
-- Auth context (token-based authentication)
-- Protected dashboard layout
-- Navbar with logout functionality
-
-### Architecture Notes
-
-- Auth state managed via React Context
-- API layer separated into `auth.flow.ts` and `auth.api.ts`
-- Token stored in localStorage
-
----
-
 ## 📁 Project Structure
 
 ```text
 root/
-├── client/                     # React frontend (auth + UI in progress)
+├── client/ 
+│    └── src/
+│       ├── features/
+│       │   └── auth/
+│       │       ├── context/
+│       │       ├── pages/
+│       │       ├── api/
+│       │       └── components/
+│       ├── components/         # shared UI (Button, Input, Layout)
+│       ├── api/client/         # axios instance
+│       ├── App.tsx
+│       └── main.tsx            # React frontend (auth + UI in progress)
 ├── server/
 │   ├── src/
 │   │   ├── db/                 # PostgreSQL + Redis clients
-│   │   ├── features/          # Feature-based modules
+│   │   ├── features/           # Feature-based modules
 │   │   │   ├── auth/
 │   │   │   ├── tasks/
 │   │   │   └── lists/
-│   │   ├── middleware/        # Express middleware (auth, rate limiting, etc.)
-│   │   ├── utils/             # Shared utilities (responses, logging, pagination, etc.)
-│   │   ├── app.js             # Express app configuration
-│   │   └── server.js          # Server startup (DB + Redis initialization)
+│   │   ├── middleware/         # Express middleware (auth, rate limiting, etc.)
+│   │   ├── utils/              # Shared utilities (responses, logging, pagination, etc.)
+│   │   ├── app.js              # Express app configuration
+│   │   └── server.js           # Server startup (DB + Redis initialization)
 │   │
-│   └── tests/                 # Integration tests (Jest + Supertest)
+│   └── tests/                  # Integration tests (Jest + Supertest)
 │       ├── auth/
 │       ├── tasks/
 │       ├── lists/
-│       └── setup/             # Test setup (app, db helpers, redis setup, global test config)
+│       └── setup/              # Test setup (app, db helpers, redis setup, global test config)
 │
 └── README.md
 ```
 
 ---
+
+## 💻 Frontend (React)
+
+Located in `/client`
+
+## Current Features (WIP)
+
+- Sign in / register flows
+- Auth Context (client-side session management using JWT)
+- Protected dashboard layout
+- Navbar with logout functionality
+
+## Architecture Notes
+
+- Feature-based frontend architecture (auth module isolated under `/features`)
+- Auth state managed via React Context (`AuthProvider`)
+- Authentication logic (sign-in, register, logout) handled inside AuthContext
+- API layer split into feature-based modules (`features/auth/api`)
+- Token stored in localStorage
+- UI separated into:
+  - `features/*` (domain-specific logic + pages)
+  - `components/*` (reusable UI primitives)
+  - `components/layout/*` (layout components like Navbar)
+
+## Frontend State Architecture
+
+- React Context handles authentication state
+- Server state management will be handled by TanStack Query
+- Local UI state handled with React hooks
+
+## Architecture Principles
+
+- Feature-based modular design
+- Separation of UI, state, and API layers
+- Server state decoupled from UI state (TanStack Query)
+
+---
+
+## 💻 Backend (Node)
+
+## Current Features
+
+- JWT authentication system
+- Rate limiting with Redis
+- Task & list APIs
+- Input validation with Zod
+- Integration tests (Jest + Supertest)
 
 ## 🧠 Architecture Notes
 
