@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router";
 import { useAuth } from "../../features/auth/context/AuthContext";
 
 export default function Navbar() {
@@ -40,7 +41,7 @@ export default function Navbar() {
             Logout
           </button>
         ) : (
-          <span>Not signed in</span>
+          <Link to="/signin">Sign in</Link>
         )}
       </span>
     </div>
