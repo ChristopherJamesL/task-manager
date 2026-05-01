@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { useAuth } from "../context/AuthContext";
+import { useRegisterMutation } from "../queries/useRegisterMutation";
+import { useSignInMutation } from "../queries/useSignInMutation";
 import AuthCard from "../components/AuthCard";
 import Button from "../../../components/Button";
 import Input from "../../../components/Input";
@@ -9,59 +10,80 @@ export default function RegisterPage() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  const { register } = useAuth();
+  const registerMutation = useRegisterMutation();
+  const signInMutation = useSignInMutation();
 
-  const handleRegister = async () => {
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      setLoading(true);
+      const registerResult = await registerMutation.mutateAsync({
+        username,
+        email,
+        password,
+      });
 
-      const user = await register({ username, email, password });
+      await signInMutation.mutateAsync({
+        identifier: registerResult.user.email,
+        password,
+      });
 
-      console.log("Registered + logged in: ", user);
-      navigate("/");
+      setUsername("");
+      setEmail("");
+      setPassword("");
+
+      navigate("/dashboard");
     } catch (err) {
       console.log("Register failed: ", err);
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
     <AuthCard>
       <h1 className="text-xl font-semibold mb-4">Register</h1>
-      <Input
-        placeholder="Username"
-        type="username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
+      <form onSubmit={handleRegister}>
+        <Input
+          name="username"
+          type="text"
+          autoComplete="username"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
 
-      <Input
-        placeholder="Email"
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+        <Input
+          name="email"
+          type="email"
+          autoComplete="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-      <Input
-        placeholder="Password"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <Button onClick={handleRegister} disabled={loading}>
-        Register
-      </Button>
-      <p className="mt-3 text-sm">
-        Already have an account?{" "}
-        <button className="text-blue-600 cursor-pointer">
-          <Link to="/signin">Sign in</Link>
-        </button>
-      </p>
+        <Input
+          name="password"
+          type="password"
+          autoComplete="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <Button
+          type="submit"
+          disabled={registerMutation.isPending || signInMutation.isPending}
+        >
+          {registerMutation.isPending ? "Creating account..." : "Register"}
+        </Button>
+
+        <p className="mt-3 text-sm">
+          Already have an account?{" "}
+          <Link className="text-blue-600 cursor-pointer" to="/signin">
+            Sign in
+          </Link>
+        </p>
+      </form>
     </AuthCard>
   );
 }

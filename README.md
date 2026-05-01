@@ -52,12 +52,13 @@ root/
 │    └── src/
 │       ├── features/
 │       │   └── auth/
-│       │       ├── context/
 │       │       ├── pages/
 │       │       ├── api/
+│       │       ├── queries/
 │       │       └── components/
 │       ├── components/         # shared UI (Button, Input, Layout)
 │       ├── api/client/         # axios instance
+│       ├── routes/             # route guards (ProtectedRoute, etc...)
 │       ├── App.tsx
 │       └── main.tsx            # React frontend (auth + UI in progress)
 ├── server/
@@ -90,17 +91,17 @@ Located in `/client`
 ## Current Features (WIP)
 
 - Sign in / register flows
-- Auth Context (client-side session management using JWT)
+- Authentication flows using TanStack Query (React Query)
 - Protected dashboard layout
 - Navbar with logout functionality
 
 ## Architecture Notes
 
 - Feature-based frontend architecture (auth module isolated under `/features`)
-- Auth state managed via React Context (`AuthProvider`)
-- Authentication logic (sign-in, register, logout) handled inside AuthContext
+- Server state managed with TanStack Query (React Query)
+- Authentication handled via query/mutation hooks (useMeQuery, useSignInMutation, etc.)
+- JWT stored in localStorage and attached via Axios interceptor
 - API layer split into feature-based modules (`features/auth/api`)
-- Token stored in localStorage
 - UI separated into:
   - `features/*` (domain-specific logic + pages)
   - `components/*` (reusable UI primitives)
@@ -108,8 +109,8 @@ Located in `/client`
 
 ## Frontend State Architecture
 
-- React Context handles authentication state
-- Server state management will be handled by TanStack Query
+- Server state (auth, user data) managed by TanStack Query
+- Query-driven authentication using `/auth/me`
 - Local UI state handled with React hooks
 
 ## Architecture Principles
@@ -117,6 +118,9 @@ Located in `/client`
 - Feature-based modular design
 - Separation of UI, state, and API layers
 - Server state decoupled from UI state (TanStack Query)
+- Hybrid authentication flow:
+  - Declarative route protection using query state (`/auth/me`)
+  - Imperative navigation on auth mutations (login/logout)
 
 ---
 
@@ -231,7 +235,7 @@ Base URL:
 ### Auth
 
 - POST /api/auth/register
-- POST /api/auth/login
+- POST /api/auth/signin
 - GET /api/auth/me
 - POST /api/auth/logout
 

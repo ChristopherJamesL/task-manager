@@ -23,8 +23,6 @@ export default function Button({
         cursor-pointer
         hover:bg-blue-700 
         transition
-        disabled:opacity-50
-        disabled:cursor-not-allowed
         "
       type={type}
       onClick={onClick}

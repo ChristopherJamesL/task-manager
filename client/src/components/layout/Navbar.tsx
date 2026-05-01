@@ -1,22 +1,21 @@
-import { useState } from "react";
 import { Link } from "react-router";
-import { useAuth } from "../../features/auth/context/AuthContext";
+import { useMeQuery } from "../../features/auth/queries/useMeQuery";
+import { useLogoutMutation } from "../../features/auth/queries/useLogoutMutation";
 
 export default function Navbar() {
-  const [isLoading, setIsLoading] = useState(false);
-  const { authStatus, logout } = useAuth();
+  const { data, isLoading } = useMeQuery();
+  const logoutMutation = useLogoutMutation();
 
-  const handleSignout = async () => {
-    try {
-      setIsLoading(true);
+  const user = data?.user ?? null;
 
-      await logout();
-    } catch (err) {
-      console.log("Failed to log out: ", err);
-    } finally {
-      setIsLoading(false);
-    }
+  console.log("Navbar user:", user);
+  console.log("Navbar isLoading:", isLoading);
+
+  const handleSignout = () => {
+    logoutMutation.mutate();
   };
+
+  if (isLoading) return null;
 
   return (
     <div
@@ -30,15 +29,17 @@ export default function Navbar() {
         justify-between 
         "
     >
-      <span className="text-blue-500 text-3xl">Task Manager</span>
+      <Link className="text-blue-500 text-3xl" to="/">
+        Task Manager
+      </Link>
       <span>
-        {authStatus === "authenticated" ? (
+        {user ? (
           <button
             className="cursor-pointer"
             onClick={handleSignout}
-            disabled={isLoading}
+            disabled={logoutMutation.isPending}
           >
-            Logout
+            Logout {user.username}
           </button>
         ) : (
           <Link to="/signin">Sign in</Link>

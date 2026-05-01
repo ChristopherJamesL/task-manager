@@ -32,4 +32,4 @@ export type LogoutResponse = {
   message: string;
 };
 
-export type TokenType = string | null;
+export type TokenType = string;
