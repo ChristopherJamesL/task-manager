@@ -1,12 +1,10 @@
 import { Link } from "react-router";
-import { useMeQuery } from "../../features/auth/queries/useMeQuery";
 import { useLogoutMutation } from "../../features/auth/queries/useLogoutMutation";
+import { useAuth } from "../../features/auth/hooks/useAuth";
 
 export default function Navbar() {
-  const { data, isLoading } = useMeQuery();
+  const { user, isLoading } = useAuth();
   const logoutMutation = useLogoutMutation();
-
-  const user = data?.user ?? null;
 
   console.log("Navbar user:", user);
   console.log("Navbar isLoading:", isLoading);
@@ -15,7 +13,14 @@ export default function Navbar() {
     logoutMutation.mutate();
   };
 
-  if (isLoading) return null;
+  if (isLoading) {
+    return (
+      <div className="flex min-w-screen p-2 border-b border-b-gray-300 justify-between">
+        <span className="text-blue-500 text-3xl">Task Manager</span>
+        <span>...</span>
+      </div>
+    );
+  }
 
   return (
     <div

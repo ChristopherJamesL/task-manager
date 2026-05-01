@@ -1,27 +1,10 @@
-import { Routes, Route, Navigate } from "react-router";
+import { Routes, Route } from "react-router";
 import Navbar from "./components/layout/Navbar";
 import SigninPage from "./features/auth/pages/SignInPage";
 import RegisterPage from "./features/auth/pages/RegisterPage";
 import ProtectedRoute from "./routes/ProtectedRoute";
-import { useMeQuery } from "./features/auth/queries/useMeQuery";
-
-function Dashboard() {
-  return <h2>Welcome to your dashboard</h2>;
-}
-
-function HomeRedirect() {
-  const { data, isLoading } = useMeQuery();
-
-  if (isLoading) return <div>Loading...</div>;
-
-  const user = data?.user;
-
-  return user ? (
-    <Navigate to="/dashboard" replace />
-  ) : (
-    <Navigate to="/signin" replace />
-  );
-}
+import HomeRedirect from "./routes/HomeRedirect";
+import Dashboard from "./features/dashboard/pages/DashboardPage";
 
 export default function App() {
   return (
