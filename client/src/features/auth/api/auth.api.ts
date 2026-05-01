@@ -2,7 +2,6 @@ import { apiClient } from "../../../api/client/client";
 import type {
   SigninInput,
   RegisterInput,
-  TokenType,
   SignInResponse,
   RegisterResponse,
   MeResponse,
@@ -24,25 +23,14 @@ export const httpRegister = async (
   return response.data.data;
 };
 
-export const httpGetMe = async (token: string): Promise<MeResponse> => {
-  const response = await apiClient.get("/auth/me", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export const httpGetMe = async (): Promise<MeResponse> => {
+  const response = await apiClient.get("/auth/me");
   return response.data.data;
 };
 
-export const httpLogout = async (token: TokenType): Promise<LogoutResponse> => {
-  const response = await apiClient.post(
-    "/auth/logout",
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
-  );
+export const httpLogout = async (): Promise<LogoutResponse> => {
+  const response = await apiClient.post("/auth/logout");
 
+  console.log("http logout response: ", response.data.data);
   return response.data.data;
 };

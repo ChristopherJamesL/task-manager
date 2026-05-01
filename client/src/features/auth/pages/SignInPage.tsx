@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { useAuth } from "../context/AuthContext";
+import { useSignInMutation } from "../queries/useSignInMutation";
 import AuthCard from "../components/AuthCard";
 import Button from "../../../components/Button";
 import Input from "../../../components/Input";
@@ -8,28 +8,21 @@ import Input from "../../../components/Input";
 export default function SigninPage() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-
-  const { signIn } = useAuth();
+  const signInMutation = useSignInMutation();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      setLoading(true);
+      await signInMutation.mutateAsync({ identifier, password });
 
-      const user = await signIn({ identifier, password });
-      console.log("user: ", user);
-
-      console.log("Signed in as: ", user.username);
       setIdentifier("");
       setPassword("");
-      navigate("/");
+
+      navigate("/dashboard");
     } catch (err) {
       console.log("Sign in failed: ", err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -39,28 +32,32 @@ export default function SigninPage() {
 
       <form onSubmit={handleSignIn}>
         <Input
+          name="identifier"
+          type="text"
+          autoComplete="username"
           placeholder="Email or username"
-          type="email"
           value={identifier}
           onChange={(e) => setIdentifier(e.target.value)}
         />
 
         <Input
-          placeholder="Password"
+          name="password"
           type="password"
+          autoComplete="password"
+          placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <Button type="submit" disabled={loading}>
-          {loading ? "Signing in..." : "Sign in"}
+        <Button type="submit" disabled={signInMutation.isPending}>
+          {signInMutation.isPending ? "Signing in..." : "Sign in"}
         </Button>
 
         <p className="mt-3 text-sm">
           Don't have an account?{" "}
-          <button className="text-blue-600 cursor-pointer">
-            <Link to="/register">Register</Link>
-          </button>
+          <Link className="text-blue-600 cursor-pointer" to="/register">
+            Register
+          </Link>
         </p>
       </form>
     </AuthCard>

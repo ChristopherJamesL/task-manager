@@ -1,22 +1,31 @@
 import { Navigate } from "react-router";
-import { useAuth } from "../features/auth/context/AuthContext";
+import { useMeQuery } from "../features/auth/queries/useMeQuery";
+import axios from "axios";
 
 export default function ProtectedRoute({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { authStatus } = useAuth();
+  const { data, isLoading, isError, error } = useMeQuery();
 
-  if (authStatus === "booting") return <div>Loading...</div>;
+  const user = data?.user ?? null;
 
-  if (authStatus !== "authenticated") {
-    console.log(
-      "protected route hit, authenticated false, re-routing to signin",
-    );
+  if (isLoading) return <div>Loading...</div>;
 
-    return <Navigate to="/signin" replace />;
+  let status: number | undefined;
+
+  if (axios.isAxiosError(error)) {
+    status = error.response?.status;
   }
+
+  if (isError) {
+    if (status === 401) return <Navigate to="/signin" replace />;
+
+    return <div>Something went wrong. Try again</div>;
+  }
+
+  if (!user) return <Navigate to="/signin" replace />;
 
   return children;
 }
