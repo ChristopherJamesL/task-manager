@@ -33,3 +33,9 @@ export type LogoutResponse = {
 };
 
 export type TokenType = string;
+
+export type ApiError = {
+  error: {
+    message: string;
+  };
+};

@@ -1,15 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { httpSignIn } from "../api/auth.api";
-import { setToken } from "../api/auth.token";
+import { authService } from "../services/auth.service";
 
 export function useSignInMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: httpSignIn,
+    mutationFn: authService.signIn,
 
-    onSuccess: (data) => {
-      setToken(data.token);
-
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["me"] });
     },
   });

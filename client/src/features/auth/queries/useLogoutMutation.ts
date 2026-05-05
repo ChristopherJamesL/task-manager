@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { httpLogout } from "../api/auth.api";
-import { removeToken } from "../api/auth.token";
+import { authService } from "../services/auth.service";
 import { useNavigate } from "react-router";
 
 export function useLogoutMutation() {
@@ -8,13 +7,10 @@ export function useLogoutMutation() {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: httpLogout,
+    mutationFn: authService.logout,
 
     onSuccess: () => {
-      removeToken();
-
       queryClient.removeQueries({ queryKey: ["me"] });
-
       navigate("/signin", { replace: true });
     },
   });

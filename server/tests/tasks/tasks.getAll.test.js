@@ -177,9 +177,9 @@ describe("Tasks - Get All", () => {
 
     const tasks = response.body.data.tasks;
 
-    expect(tasks.every((t) => t.is_completed === false)).toBe(true);
+    expect(tasks.every((t) => t.isCompleted === false)).toBe(true);
 
-    expect(tasks.every((t) => t.list_id === listId)).toBe(true);
+    expect(tasks.every((t) => t.listId === listId)).toBe(true);
 
     const timestamps = tasks.map((t) => new Date(t.created_at).getTime());
 

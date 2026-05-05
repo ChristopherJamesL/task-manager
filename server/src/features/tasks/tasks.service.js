@@ -5,6 +5,7 @@ const {
   updateTask: updateTaskModel,
   deleteTask: deleteTaskModel,
 } = require("./tasks.model");
+const { mapTask } = require("./tasks.mapper");
 const { NotFoundError } = require("../../utils/errors");
 
 async function getAllTasks({
@@ -36,6 +37,8 @@ async function getAllTasks({
     limitValue,
   );
 
+  const mappedTasks = tasks.map(mapTask);
+
   const lastTask = tasks[tasks.length - 1];
 
   const sortField = sortBy === "dueDate" ? "due_date" : "created_at";
@@ -48,7 +51,7 @@ async function getAllTasks({
     : null;
 
   return {
-    tasks,
+    tasks: mappedTasks,
     meta: {
       nextCursor,
       hasNextPage: tasks.length === limitValue,
@@ -61,13 +64,13 @@ async function getTaskById({ userId, id }) {
 
   if (!task) throw new NotFoundError("Task not found");
 
-  return { task };
+  return { task: mapTask(task) };
 }
 
 async function createTask({ userId, taskData }) {
   const task = await createTaskModel(userId, taskData);
 
-  return { task };
+  return { task: mapTask(task) };
 }
 
 async function updateTask({ userId, id, updates }) {
@@ -75,7 +78,7 @@ async function updateTask({ userId, id, updates }) {
 
   if (!task) throw new NotFoundError("Task not found");
 
-  return { task };
+  return { task: mapTask(task) };
 }
 
 async function deleteTask({ userId, id }) {
@@ -83,7 +86,7 @@ async function deleteTask({ userId, id }) {
 
   if (!task) throw new NotFoundError("Task not found");
 
-  return { task };
+  return { task: mapTask(task) };
 }
 
 module.exports = {

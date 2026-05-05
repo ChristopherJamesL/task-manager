@@ -5,6 +5,7 @@ export function useAuth() {
 
   return {
     user: meQuery.data?.user ?? null,
+    isAuthenticated: !!meQuery.data?.user,
     isLoading: meQuery.isLoading,
     isError: meQuery.isError,
   };

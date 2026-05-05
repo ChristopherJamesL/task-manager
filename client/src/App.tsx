@@ -2,9 +2,11 @@ import { Routes, Route } from "react-router";
 import Navbar from "./components/layout/Navbar";
 import SigninPage from "./features/auth/pages/SignInPage";
 import RegisterPage from "./features/auth/pages/RegisterPage";
-import ProtectedRoute from "./routes/ProtectedRoute";
 import HomeRedirect from "./routes/HomeRedirect";
 import Dashboard from "./features/dashboard/pages/DashboardPage";
+import ListsPage from "./features/lists/pages/ListsPage";
+import ListDetailPage from "./features/lists/pages/ListDetailPage";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 export default function App() {
   return (
@@ -16,14 +18,11 @@ export default function App() {
           <Route path="/signin" element={<SigninPage />} />
           <Route path="/register" element={<RegisterPage />} />
 
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/lists" element={<ListsPage />} />
+            <Route path="/lists/:id" element={<ListDetailPage />} />
+          </Route>
         </Routes>
       </main>
     </div>

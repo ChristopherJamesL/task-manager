@@ -20,8 +20,8 @@ describe("Tasks - Create", () => {
     expect(response.body.data.task).toEqual(
       expect.objectContaining({
         title: "my-task",
-        list_id: listId,
-        is_completed: false,
+        listId: listId,
+        isCompleted: false,
       }),
     );
   });
@@ -72,7 +72,7 @@ describe("Tasks - Create", () => {
     expect(response.body.data.task).toEqual(
       expect.objectContaining({
         priority: "medium",
-        is_completed: false,
+        isCompleted: false,
       }),
     );
   });

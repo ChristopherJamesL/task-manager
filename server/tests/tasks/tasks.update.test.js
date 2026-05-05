@@ -46,7 +46,7 @@ describe("Tasks - Update", () => {
       expect.objectContaining({
         title: "updated-title",
         priority: "high",
-        is_completed: true,
+        isCompleted: true,
       }),
     );
   });
