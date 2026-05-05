@@ -6,9 +6,6 @@ export default function Navbar() {
   const { user, isLoading } = useAuth();
   const logoutMutation = useLogoutMutation();
 
-  console.log("Navbar user:", user);
-  console.log("Navbar isLoading:", isLoading);
-
   const handleSignout = () => {
     logoutMutation.mutate();
   };

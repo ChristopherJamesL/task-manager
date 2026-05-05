@@ -12,7 +12,7 @@ export type ListIdProps = string;
 export type ListType = {
   id: string;
   name: string;
-  created_at: string;
+  createdAt: string;
 };
 
 export type GetAllListsResponse = {

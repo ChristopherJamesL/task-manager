@@ -23,4 +23,11 @@ export type CreateTask = {
   dueDate?: string;
 };
 
-export type UpdateTask = Partial<CreateTask>;
+export type UpdateTask = {
+  title?: string;
+  description?: string;
+  listId?: number;
+  priority?: TaskPriority;
+  dueDate?: string;
+  isCompleted?: boolean;
+};
