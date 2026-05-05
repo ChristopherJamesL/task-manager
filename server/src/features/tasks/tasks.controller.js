@@ -29,6 +29,8 @@ async function httpGetAllTasks(req, res) {
 
   const result = await getAllTasks({ userId, ...res.locals.validatedQuery });
 
+  console.log("get all tasks result: ", result);
+
   return sendSuccess(res, {
     data: {
       tasks: result.tasks,
@@ -66,6 +68,8 @@ async function httpUpdateTask(req, res) {
   const updates = req.body;
 
   const result = await updateTask({ userId, id, updates });
+
+  console.log("update task result: ", result);
 
   return sendSuccess(res, {
     data: result,

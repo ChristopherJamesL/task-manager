@@ -32,7 +32,7 @@ describe("Tasks - Update", () => {
     const newTaskData = createTaskUpdateData({
       title: "updated-title",
       priority: "high",
-      isCompleted: "true",
+      isCompleted: true,
     });
 
     const response = await updateTask({

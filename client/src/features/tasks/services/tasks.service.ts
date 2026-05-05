@@ -15,8 +15,7 @@ import type { GetTasksResponse } from "../types/tasks.response.types";
 
 export const taskService = {
   async getTasks(params?: GetTaskParams): Promise<GetTasksResponse> {
-    const res = await httpGetTasks(params);
-    return res;
+    return httpGetTasks(params);
   },
 
   async getTaskById(id: number): Promise<Task> {

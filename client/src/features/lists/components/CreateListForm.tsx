@@ -15,6 +15,7 @@ export default function CreateListForm({
     if (!name.trim()) return;
 
     onCreate(name);
+
     setName("");
   };
 

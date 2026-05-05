@@ -12,21 +12,21 @@ const dueAfter = z.iso.datetime();
 const dueBefore = z.iso.datetime();
 const dueDate = z.iso.datetime({ offset: true });
 const id = z.coerce.number().min(1);
-const isCompleted = z.string().transform(zodRequestQueryBoolean).default(false);
+const isCompleted = z.string().transform(zodRequestQueryBoolean);
 const limit = z.coerce.number().min(1).max(50);
 const listId = z.coerce.number().min(1);
 const order = z.enum(["asc", "desc"]).default("desc");
 const priority = z.enum(["low", "medium", "high"]);
 const sortBy = z.enum(["createdAt", "dueDate"]).default("createdAt");
 const title = z.string().min(1).max(255);
-const isCompletedPatch = z.string().transform(zodRequestQueryBoolean);
+const isCompletedPatch = z.boolean();
 
 const getTasksQuerySchema = z.object({
   cursorId: cursorId.optional(),
   cursorValue: cursorValue.optional(),
   dueAfter: dueAfter.optional(),
   dueBefore: dueBefore.optional(),
-  isCompleted,
+  isCompleted: isCompleted.optional(),
   limit: limit.default(10),
   listId: listId.optional(),
   order,

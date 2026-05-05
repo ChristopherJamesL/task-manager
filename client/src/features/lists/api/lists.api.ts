@@ -10,7 +10,6 @@ import type {
 
 export const httpGetAllLists = async (): Promise<GetAllListsResponse> => {
   const response = await apiClient.get("/lists");
-  console.log("Lists Response: ", response.data.data);
   return response.data.data;
 };
 
@@ -25,7 +24,6 @@ export const httpCreateList = async (
   data: CreateListProps,
 ): Promise<ListType> => {
   const response = await apiClient.post("/lists", data);
-  console.log("List created: ", response.data);
   return response.data.data;
 };
 
