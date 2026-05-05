@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useRegisterMutation } from "../queries/useRegisterMutation";
 import { useSignInMutation } from "../queries/useSignInMutation";
+import { AxiosError } from "axios";
+import type { ApiError } from "../types/auth.types";
 import AuthCard from "../components/AuthCard";
 import Button from "../../../components/Button";
 import Input from "../../../components/Input";
@@ -26,7 +28,7 @@ export default function RegisterPage() {
       });
 
       await signInMutation.mutateAsync({
-        identifier: registerResult.user.email,
+        identifier: registerResult.email,
         password,
       });
 
@@ -39,6 +41,11 @@ export default function RegisterPage() {
       console.log("Register failed: ", err);
     }
   };
+
+  const errorMessage = registerMutation.isError
+    ? (registerMutation.error as AxiosError<ApiError>)?.response?.data?.error
+        ?.message || "Something went wrong"
+    : null;
 
   return (
     <AuthCard>
@@ -76,6 +83,8 @@ export default function RegisterPage() {
         >
           {registerMutation.isPending ? "Creating account..." : "Register"}
         </Button>
+
+        {errorMessage && <p className="mt-3 text-sm">{errorMessage}</p>}
 
         <p className="mt-3 text-sm">
           Already have an account?{" "}

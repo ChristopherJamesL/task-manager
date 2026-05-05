@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useSignInMutation } from "../queries/useSignInMutation";
+import { AxiosError } from "axios";
+import type { ApiError } from "../types/auth.types";
 import AuthCard from "../components/AuthCard";
 import Button from "../../../components/Button";
 import Input from "../../../components/Input";
@@ -25,6 +27,11 @@ export default function SigninPage() {
       console.log("Sign in failed: ", err);
     }
   };
+
+  const errorMessage = signInMutation.isError
+    ? (signInMutation.error as AxiosError<ApiError>)?.response?.data?.error
+        ?.message || "Something went wrong"
+    : null;
 
   return (
     <AuthCard>
@@ -52,6 +59,8 @@ export default function SigninPage() {
         <Button type="submit" disabled={signInMutation.isPending}>
           {signInMutation.isPending ? "Signing in..." : "Sign in"}
         </Button>
+
+        {errorMessage && <p className="mt-3 text-sm">{errorMessage}</p>}
 
         <p className="mt-3 text-sm">
           Don't have an account?{" "}

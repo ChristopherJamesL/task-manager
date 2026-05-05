@@ -51,7 +51,7 @@ async function signInUser({ identifier, password, ipAddr }) {
   }
 
   const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
+    expiresIn: "1hr",
   });
 
   return {
