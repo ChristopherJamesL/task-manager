@@ -21,7 +21,7 @@ export default function ListsPage() {
   return (
     <div className="min-w-2xl">
       <div className="flex justify-between mb-2 ">
-        <h1>Lists</h1>
+        <h1 className="font-semibold text-xl">Lists</h1>
         <button
           className="border bg-amber-600 cursor-pointer"
           onClick={handleNavigate}
