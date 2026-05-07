@@ -17,7 +17,7 @@ export const listService = {
     return res.lists;
   },
 
-  async getListById(listId: string): Promise<ListType> {
+  async getListById(listId: number): Promise<ListType> {
     return httpGetListById(listId);
   },
 
@@ -29,7 +29,7 @@ export const listService = {
     return httpUpdateList({ listId, name });
   },
 
-  async deleteList(listId: string) {
+  async deleteList(listId: number) {
     return httpDeleteList(listId);
   },
 };

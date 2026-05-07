@@ -7,10 +7,10 @@ export type CreateListProps = {
   name: string;
 };
 
-export type ListIdProps = string;
+export type ListIdProps = number;
 
 export type ListType = {
-  id: string;
+  id: number;
   name: string;
   createdAt: string;
 };
@@ -20,6 +20,6 @@ export type GetAllListsResponse = {
 };
 
 export type DeleteListResponse = {
-  id: string;
+  id: number;
   name: string;
 };
