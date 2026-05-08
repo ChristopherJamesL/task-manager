@@ -8,11 +8,13 @@ import { useDeleteListMutation } from "../queries/useDeleteListMutation";
 import { useDeleteTaskMutation } from "../../tasks/queries/useDeleteTaskMutation";
 import { useTaskFilters } from "../../tasks/hooks/useTaskFilters";
 import { formatName } from "../../../utils/format";
+import TaskFilters from "../../tasks/components/TaskFilters";
+import type { Task } from "../../tasks/types/task.types";
 
 export default function ListDetailPage() {
   const [title, setTitle] = useState("");
 
-  const { filters, toggleFilter, resetFilters } = useTaskFilters();
+  const { filters, toggleFilter, setSort, resetFilters } = useTaskFilters();
 
   const navigate = useNavigate();
 
@@ -70,14 +72,13 @@ export default function ListDetailPage() {
     deleteTask.mutate(taskId);
   };
 
-  const handleToggle = (taskId: number, current: boolean) => {
+  const handleToggle = (task: Task) => {
     updateTask.mutate({
-      id: taskId,
+      id: task.id,
       data: {
-        isCompleted: !current,
+        isCompleted: !task.isCompleted,
       },
     });
-    console.log("taskId: ", taskId, "isCompleted: ", current);
   };
 
   if (listLoading || tasksLoading) return <div>Loading...</div>;
@@ -101,46 +102,12 @@ export default function ListDetailPage() {
 
       <p className="text-sm text-gray-500">Created at: {formattedDate}</p>
 
-      <div className="flex gap-2 mt-2">
-        <button
-          className="border px-1 rounded cursor-pointer"
-          onClick={resetFilters}
-        >
-          All
-        </button>
-
-        <button
-          className={`border px-1 rounded cursor-pointer ${filters.isCompleted === true ? "bg-blue-500 text-white" : ""}`}
-          onClick={() => toggleFilter("isCompleted", "true")}
-        >
-          Completed
-        </button>
-
-        <button
-          className={`border px-1 rounded cursor-pointer ${filters.isCompleted === false ? "bg-blue-500 text-white" : ""}`}
-          onClick={() => toggleFilter("isCompleted", "false")}
-        >
-          Active
-        </button>
-        <button
-          className={`border px-1 rounded cursor-pointer ${filters.priority === "low" ? "bg-blue-500 text-white" : ""}`}
-          onClick={() => toggleFilter("priority", "low")}
-        >
-          Low
-        </button>
-        <button
-          className={`border px-1 rounded cursor-pointer ${filters.priority === "medium" ? "bg-blue-500 text-white" : ""}`}
-          onClick={() => toggleFilter("priority", "medium")}
-        >
-          Medium
-        </button>
-        <button
-          className={`border px-1 rounded cursor-pointer ${filters.priority === "high" ? "bg-blue-500 text-white" : ""}`}
-          onClick={() => toggleFilter("priority", "high")}
-        >
-          High
-        </button>
-      </div>
+      <TaskFilters
+        filters={filters}
+        toggleFilter={toggleFilter}
+        setSort={setSort}
+        resetFilters={resetFilters}
+      />
 
       <div className="mt-6">
         <h2 className="font-medium mb-2">Tasks</h2>
@@ -167,33 +134,38 @@ export default function ListDetailPage() {
             <p>No tasks yet</p>
           ) : (
             <ul>
-              {tasks?.data?.tasks?.map((task) => (
-                <li
-                  key={task.id}
-                  className="border p-2 rounded flex justify-between mb-1"
-                >
-                  <span
-                    onClick={() => handleToggle(task.id, task.isCompleted)}
-                    className={`cursor-pointer 
-                    ${task.isCompleted ? "line-through text-gray-800" : ""}`}
+              {tasks?.data?.tasks?.map((task) => {
+                const isDimmed =
+                  task.isCompleted && filters.isCompleted !== true;
+                return (
+                  <li
+                    key={task.id}
+                    className={`border p-2 rounded flex justify-between mb-1
+                      ${isDimmed ? "border-gray-400 bg-gray-200" : ""}  
+                    `}
                   >
-                    {formatName(task.title)}
-                  </span>
-
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-500">
-                      {task.priority}
+                    <span
+                      onClick={() => handleToggle(task)}
+                      className={`cursor-pointer`}
+                    >
+                      {formatName(task.title)}
                     </span>
 
-                    <button
-                      className="text-red-500 text-sm cursor-pointer"
-                      onClick={() => handleDeleteTask(task.id)}
-                    >
-                      X
-                    </button>
-                  </div>
-                </li>
-              ))}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-500">
+                        {task.priority}
+                      </span>
+
+                      <button
+                        className="text-red-500 text-sm cursor-pointer"
+                        onClick={() => handleDeleteTask(task.id)}
+                      >
+                        X
+                      </button>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>
