@@ -1,11 +1,13 @@
 import { useSearchParams } from "react-router";
-import type { TaskPriority } from "../types/task.types";
+import type { TaskPriority, SortBy, Order } from "../types/task.types";
 
 export function useTaskFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const isCompletedParam = searchParams.get("isCompleted");
   const priorityParam = searchParams.get("priority");
+  const sortByParam = searchParams.get("sortBy");
+  const orderParam = searchParams.get("order");
 
   const isCompleted =
     isCompletedParam === "true"
@@ -21,17 +23,15 @@ export function useTaskFilters() {
       ? (priorityParam as TaskPriority)
       : undefined;
 
-  //   function setFilters(key: string, value?: string) {
-  //     const params = new URLSearchParams(searchParams);
+  const sortBy =
+    sortByParam === "createdAt" || sortByParam === "dueDate"
+      ? (sortByParam as SortBy)
+      : undefined;
 
-  //     if (value) {
-  //       params.set(key, value);
-  //     } else {
-  //       params.delete(key);
-  //     }
-
-  //     setSearchParams(params);
-  //   }
+  const order =
+    orderParam === "asc" || orderParam === "desc"
+      ? (orderParam as Order)
+      : undefined;
 
   function toggleFilter(key: string, value: string) {
     const params = new URLSearchParams(searchParams);
@@ -47,6 +47,22 @@ export function useTaskFilters() {
     setSearchParams(params);
   }
 
+  function setSort(sort: SortBy) {
+    const params = new URLSearchParams(searchParams);
+
+    const currentSort = params.get("sortBy");
+    const currentOrder = params.get("order");
+
+    if (currentSort === sort) {
+      params.set("order", currentOrder === "asc" ? "desc" : "asc");
+    } else {
+      params.set("sortBy", sort);
+      params.set("order", "desc");
+    }
+
+    setSearchParams(params);
+  }
+
   function resetFilters() {
     setSearchParams({});
   }
@@ -55,9 +71,12 @@ export function useTaskFilters() {
     filters: {
       isCompleted,
       priority,
+      sortBy,
+      order,
     },
 
     toggleFilter,
+    setSort,
     resetFilters,
   };
 }
