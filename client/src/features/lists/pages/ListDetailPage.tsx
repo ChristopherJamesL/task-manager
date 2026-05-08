@@ -1,16 +1,18 @@
 import { useState } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import { useListQuery } from "../queries/useListQuery";
 import { useTasksQuery } from "../../tasks/queries/useTasksQuery";
 import { useCreateTaskMutation } from "../../tasks/queries/useCreateTaskMutation";
 import { useUpdateTaskMutation } from "../../tasks/queries/useUpdateTaskMutation";
 import { useDeleteListMutation } from "../queries/useDeleteListMutation";
 import { useDeleteTaskMutation } from "../../tasks/queries/useDeleteTaskMutation";
+import { useTaskFilters } from "../../tasks/hooks/useTaskFilters";
 import { formatName } from "../../../utils/format";
 
 export default function ListDetailPage() {
   const [title, setTitle] = useState("");
-  const [searchParams, setSearchParams] = useSearchParams();
+
+  const { filters, toggleFilter, resetFilters } = useTaskFilters();
 
   const navigate = useNavigate();
 
@@ -22,35 +24,6 @@ export default function ListDetailPage() {
   const deleteList = useDeleteListMutation();
   const deleteTask = useDeleteTaskMutation();
 
-  const updateSearchParams = (key: string, value?: string) => {
-    const params = new URLSearchParams(searchParams);
-
-    if (value) {
-      params.set(key, value);
-    } else {
-      params.delete(key);
-    }
-
-    setSearchParams(params);
-  };
-
-  const isCompletedParam = searchParams.get("isCompleted");
-  const priorityParam = searchParams.get("priority");
-
-  const isCompleted =
-    isCompletedParam === "true"
-      ? true
-      : isCompletedParam === "false"
-        ? false
-        : undefined;
-
-  const priority =
-    priorityParam === "low" ||
-    priorityParam === "medium" ||
-    priorityParam === "high"
-      ? priorityParam
-      : undefined;
-
   const {
     data: list,
     isLoading: listLoading,
@@ -61,7 +34,7 @@ export default function ListDetailPage() {
     data: tasks,
     isLoading: tasksLoading,
     isError: tasksError,
-  } = useTasksQuery({ listId, isCompleted, priority });
+  } = useTasksQuery({ listId, ...filters });
 
   const handleCreateTask = (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,38 +102,41 @@ export default function ListDetailPage() {
       <p className="text-sm text-gray-500">Created at: {formattedDate}</p>
 
       <div className="flex gap-2 mt-2">
-        <button className="cursor-pointer" onClick={() => setSearchParams({})}>
+        <button
+          className="border px-1 rounded cursor-pointer"
+          onClick={resetFilters}
+        >
           All
         </button>
 
         <button
-          className="cursor-pointer"
-          onClick={() => updateSearchParams("isCompleted", "true")}
+          className={`border px-1 rounded cursor-pointer ${filters.isCompleted === true ? "bg-blue-500 text-white" : ""}`}
+          onClick={() => toggleFilter("isCompleted", "true")}
         >
           Completed
         </button>
 
         <button
-          className="cursor-pointer"
-          onClick={() => updateSearchParams("isCompleted", "false")}
+          className={`border px-1 rounded cursor-pointer ${filters.isCompleted === false ? "bg-blue-500 text-white" : ""}`}
+          onClick={() => toggleFilter("isCompleted", "false")}
         >
           Active
         </button>
         <button
-          className="cursor-pointer"
-          onClick={() => updateSearchParams("priority", "low")}
+          className={`border px-1 rounded cursor-pointer ${filters.priority === "low" ? "bg-blue-500 text-white" : ""}`}
+          onClick={() => toggleFilter("priority", "low")}
         >
           Low
         </button>
         <button
-          className="cursor-pointer"
-          onClick={() => updateSearchParams("priority", "medium")}
+          className={`border px-1 rounded cursor-pointer ${filters.priority === "medium" ? "bg-blue-500 text-white" : ""}`}
+          onClick={() => toggleFilter("priority", "medium")}
         >
           Medium
         </button>
         <button
-          className="cursor-pointer"
-          onClick={() => updateSearchParams("priority", "high")}
+          className={`border px-1 rounded cursor-pointer ${filters.priority === "high" ? "bg-blue-500 text-white" : ""}`}
+          onClick={() => toggleFilter("priority", "high")}
         >
           High
         </button>

@@ -1,4 +1,5 @@
-export type TaskPriority = "low" | "medium" | "high";
+import type { TaskPriority } from "./task.types";
+
 export type SortBy = "createdAt" | "dueDate";
 export type Order = "asc" | "desc";
 
