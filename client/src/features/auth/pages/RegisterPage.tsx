@@ -3,10 +3,10 @@ import { Link, useNavigate } from "react-router";
 import { useRegisterMutation } from "../queries/useRegisterMutation";
 import { useSignInMutation } from "../queries/useSignInMutation";
 import { AxiosError } from "axios";
-import type { ApiError } from "../types/auth.types";
 import AuthCard from "../components/AuthCard";
 import Button from "../../../components/Button";
 import Input from "../../../components/Input";
+import type { ApiErrorResponse } from "../../../types/api.types";
 
 export default function RegisterPage() {
   const [username, setUsername] = useState("");
@@ -43,8 +43,8 @@ export default function RegisterPage() {
   };
 
   const errorMessage = registerMutation.isError
-    ? (registerMutation.error as AxiosError<ApiError>)?.response?.data?.error
-        ?.message || "Something went wrong"
+    ? (registerMutation.error as AxiosError<ApiErrorResponse>)?.response?.data
+        ?.error?.message || "Something went wrong"
     : null;
 
   return (

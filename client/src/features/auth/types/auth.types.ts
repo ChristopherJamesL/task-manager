@@ -1,3 +1,14 @@
+import type { ApiResponse } from "../../../types/api.types";
+
+export type SigninPayload = {
+  token: string;
+  user: User;
+};
+
+export type UserPayload = { user: User };
+
+export type LogoutPayload = { message: string };
+
 export type SigninInput = {
   identifier: string;
   password: string;
@@ -15,27 +26,18 @@ export type User = {
   email: string;
 };
 
-export type SignInResponse = {
-  token: string;
-  user: User;
-};
+export type SignInResponse = ApiResponse<SigninPayload>;
 
-export type RegisterResponse = {
-  user: User;
-};
+export type RegisterResponse = ApiResponse<UserPayload>;
 
-export type MeResponse = {
-  user: User;
-};
+export type MeResponse = ApiResponse<UserPayload>;
 
-export type LogoutResponse = {
-  message: string;
-};
+export type LogoutResponse = ApiResponse<LogoutPayload>;
 
 export type TokenType = string;
 
-export type ApiError = {
-  error: {
-    message: string;
-  };
-};
+// export type ApiError = {
+//   error: {
+//     message: string;
+//   };
+// };
