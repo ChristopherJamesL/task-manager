@@ -19,18 +19,22 @@ export const taskService = {
   },
 
   async getTaskById(id: number): Promise<Task> {
-    return httpGetTaskById(id);
+    const res = await httpGetTaskById(id);
+    return res.data.task;
   },
 
   async createTask(data: CreateTask): Promise<Task> {
-    return httpCreateTask(data);
+    const res = await httpCreateTask(data);
+    return res.data.task;
   },
 
   async updateTask(id: number, data: UpdateTask): Promise<Task> {
-    return httpUpdateTask(id, data);
+    const res = await httpUpdateTask(id, data);
+    return res.data.task;
   },
 
   async deleteTask(id: number): Promise<Task> {
-    return httpDeleteTask(id);
+    const res = await httpDeleteTask(id);
+    return res.data.task;
   },
 };

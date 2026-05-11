@@ -4,8 +4,8 @@ export function useAuth() {
   const meQuery = useMeQuery();
 
   return {
-    user: meQuery.data?.user ?? null,
-    isAuthenticated: !!meQuery.data?.user,
+    user: meQuery.data ?? null,
+    isAuthenticated: !!meQuery.data,
     isLoading: meQuery.isLoading,
     isError: meQuery.isError,
   };

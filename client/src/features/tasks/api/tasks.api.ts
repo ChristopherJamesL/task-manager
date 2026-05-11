@@ -1,7 +1,10 @@
 import { apiClient } from "../../../api/client/client";
 import type { Task } from "../types/task.types";
 import type { CreateTask, GetTaskParams } from "../types/tasks.request.types";
-import type { GetTasksResponse } from "../types/tasks.response.types";
+import type {
+  GetTasksResponse,
+  TaskResponse,
+} from "../types/tasks.response.types";
 
 export const httpGetTasks = async (
   params?: GetTaskParams,
@@ -12,26 +15,28 @@ export const httpGetTasks = async (
   return response.data;
 };
 
-export const httpGetTaskById = async (id: number): Promise<Task> => {
+export const httpGetTaskById = async (id: number): Promise<TaskResponse> => {
   const response = await apiClient.get(`/tasks/${id}`);
-  return response.data.data;
+  return response.data;
 };
 
-export const httpCreateTask = async (data: CreateTask): Promise<Task> => {
+export const httpCreateTask = async (
+  data: CreateTask,
+): Promise<TaskResponse> => {
   const response = await apiClient.post("/tasks", data);
 
-  return response.data.data;
+  return response.data;
 };
 
 export const httpUpdateTask = async (
   id: number,
   data: Partial<Task>,
-): Promise<Task> => {
+): Promise<TaskResponse> => {
   const response = await apiClient.patch(`/tasks/${id}`, data);
-  return response.data.data;
+  return response.data;
 };
 
-export const httpDeleteTask = async (id: number): Promise<Task> => {
+export const httpDeleteTask = async (id: number): Promise<TaskResponse> => {
   const response = await apiClient.delete(`/tasks/${id}`);
-  return response.data.data;
+  return response.data;
 };

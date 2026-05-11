@@ -6,30 +6,36 @@ import {
   httpDeleteList,
 } from "../api/lists.api";
 import type {
-  ListType,
+  List,
   CreateListProps,
   UpdateListProps,
+  DeletedList,
 } from "../types/lists.types";
 
 export const listService = {
-  async getLists(): Promise<ListType[]> {
+  async getLists(): Promise<List[]> {
     const res = await httpGetAllLists();
-    return res.lists;
+    console.log("response: ", res);
+    return res.data.lists;
   },
 
-  async getListById(listId: number): Promise<ListType> {
-    return httpGetListById(listId);
+  async getListById(listId: number): Promise<List> {
+    const res = await httpGetListById(listId);
+    return res.data.list;
   },
 
-  async createList(data: CreateListProps): Promise<ListType> {
-    return httpCreateList(data);
+  async createList(data: CreateListProps): Promise<List> {
+    const res = await httpCreateList(data);
+    return res.data.list;
   },
 
-  async updateList({ listId, name }: UpdateListProps): Promise<ListType> {
-    return httpUpdateList({ listId, name });
+  async updateList({ listId, name }: UpdateListProps): Promise<List> {
+    const res = await httpUpdateList({ listId, name });
+    return res.data.list;
   },
 
-  async deleteList(listId: number) {
-    return httpDeleteList(listId);
+  async deleteList(listId: number): Promise<DeletedList> {
+    const res = await httpDeleteList(listId);
+    return res.data;
   },
 };

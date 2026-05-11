@@ -1,16 +1,10 @@
+import type { ApiResponse, PaginatedResponse } from "../../../types/api.types";
 import type { Task } from "./task.types";
 
-export type GetTasksResponse = {
-  data: {
-    tasks: Task[];
-  };
+export type TasksPayload = { tasks: Task[] };
 
-  meta: {
-    nextCursor: {
-      value: string;
-      id: number;
-    } | null;
+export type TaskPayload = { task: Task };
 
-    hasNextPage: boolean;
-  };
-};
+export type GetTasksResponse = PaginatedResponse<TasksPayload>;
+
+export type TaskResponse = ApiResponse<TaskPayload>;

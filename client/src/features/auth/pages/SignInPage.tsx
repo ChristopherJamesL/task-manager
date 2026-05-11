@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useSignInMutation } from "../queries/useSignInMutation";
 import { AxiosError } from "axios";
-import type { ApiError } from "../types/auth.types";
 import AuthCard from "../components/AuthCard";
 import Button from "../../../components/Button";
 import Input from "../../../components/Input";
+import type { ApiErrorResponse } from "../../../types/api.types";
 
 export default function SigninPage() {
   const [identifier, setIdentifier] = useState("");
@@ -29,8 +29,8 @@ export default function SigninPage() {
   };
 
   const errorMessage = signInMutation.isError
-    ? (signInMutation.error as AxiosError<ApiError>)?.response?.data?.error
-        ?.message || "Something went wrong"
+    ? (signInMutation.error as AxiosError<ApiErrorResponse>)?.response?.data
+        ?.error?.message || "Something went wrong"
     : null;
 
   return (

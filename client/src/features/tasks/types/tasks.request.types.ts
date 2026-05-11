@@ -1,7 +1,4 @@
-import type { TaskPriority } from "./task.types";
-
-export type SortBy = "createdAt" | "dueDate";
-export type Order = "asc" | "desc";
+import type { TaskPriority, SortBy, Order } from "./task.types";
 
 export type GetTaskParams = {
   listId?: number;
