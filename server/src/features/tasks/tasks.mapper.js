@@ -8,7 +8,7 @@ function mapTask(row) {
     isCompleted: row.is_completed,
     priority: row.priority,
     dueDate: row.due_date,
-    createdAt: row.createdAt,
+    createdAt: row.created_at,
   };
 }
 

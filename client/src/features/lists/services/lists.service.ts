@@ -15,7 +15,6 @@ import type {
 export const listService = {
   async getLists(): Promise<List[]> {
     const res = await httpGetAllLists();
-    console.log("response: ", res);
     return res.data.lists;
   },
 

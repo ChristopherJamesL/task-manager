@@ -75,6 +75,8 @@ export function useTaskFilters() {
       order,
     },
 
+    searchParams,
+
     toggleFilter,
     setSort,
     resetFilters,

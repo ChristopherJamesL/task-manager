@@ -14,10 +14,13 @@ const priorityFilters = [
 
 export default function TaskFilters({
   filters,
+  searchParams,
   toggleFilter,
   setSort,
   resetFilters,
 }: TaskFilterProps) {
+  const hasFilters = searchParams.size !== 0;
+
   const isCreatedAt = filters.sortBy === "createdAt";
   const isDueDate = filters.sortBy === "dueDate";
   const isAsc = filters.order === "asc";
@@ -29,7 +32,9 @@ export default function TaskFilters({
           return (
             <button
               key={filter.label}
-              className="border px-1 rounded cursor-pointer"
+              className={`border px-1 rounded cursor-pointer
+                ${hasFilters ? "hover:bg-green-200" : "bg-green-400"}
+              `}
               onClick={resetFilters}
             >
               {filter.label}
@@ -45,8 +50,9 @@ export default function TaskFilters({
         return (
           <button
             key={filter.label}
-            className={`border px-1 rounded cursor-pointer 
-                        ${isActive ? "bg-blue-500 text-white" : ""}`}
+            className={`border px-1 rounded cursor-pointer               
+              ${isActive ? "bg-blue-500 text-white" : "hover:bg-blue-100"}
+            `}
             onClick={() => toggleFilter(filter.key!, filter.value)}
           >
             {filter.label}
@@ -58,7 +64,7 @@ export default function TaskFilters({
         <button
           key={filter.label}
           className={`border px-1 rounded cursor-pointer
-                    ${filters.priority === filter.value ? "bg-blue-500 text-white" : ""}    
+                    ${filters.priority === filter.value ? "bg-blue-500 text-white" : "hover:bg-blue-100"}    
                 `}
           onClick={() => toggleFilter("priority", filter.value)}
         >
@@ -68,7 +74,7 @@ export default function TaskFilters({
 
       <button
         className={`border px-1 rounded cursor-pointer flex items-center gap-1
-            ${isCreatedAt ? "bg-blue-500 text-white" : ""}`}
+            ${isCreatedAt ? "bg-blue-500 text-white" : "hover:bg-blue-100"}`}
         onClick={() => setSort("createdAt")}
       >
         Created At{" "}
@@ -77,7 +83,7 @@ export default function TaskFilters({
 
       <button
         className={`border px-1 rounded cursor-pointer flex items-center gap-1
-            ${isDueDate ? "bg-blue-500 text-white" : ""}`}
+            ${isDueDate ? "bg-blue-500 text-white" : "hover:bg-blue-100"}`}
         onClick={() => setSort("dueDate")}
       >
         Due Date{" "}

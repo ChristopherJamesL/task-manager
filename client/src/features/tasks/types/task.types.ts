@@ -22,6 +22,8 @@ export type TaskFilterProps = {
     order?: Order;
   };
 
+  searchParams: URLSearchParams;
+
   toggleFilter: (key: string, value: string) => void;
   setSort: (value: SortBy) => void;
   resetFilters: () => void;
