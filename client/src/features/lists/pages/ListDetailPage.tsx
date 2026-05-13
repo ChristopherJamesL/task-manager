@@ -9,12 +9,15 @@ import { useDeleteTaskMutation } from "../../tasks/queries/useDeleteTaskMutation
 import { useTaskFilters } from "../../tasks/hooks/useTaskFilters";
 import { formatName } from "../../../utils/format";
 import TaskFilters from "../../tasks/components/TaskFilters";
+import { getDueDateLabel } from "../../tasks/utils/getDueDateLabel";
+import { priorityStyles } from "../../../utils/priorityStyles";
 import type { Task } from "../../tasks/types/task.types";
 
 export default function ListDetailPage() {
   const [title, setTitle] = useState("");
 
-  const { filters, toggleFilter, setSort, resetFilters } = useTaskFilters();
+  const { filters, searchParams, toggleFilter, setSort, resetFilters } =
+    useTaskFilters();
 
   const navigate = useNavigate();
 
@@ -66,13 +69,20 @@ export default function ListDetailPage() {
     });
   };
 
-  const handleDeleteTask = (taskId: number) => {
+  const handleDeleteTask = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    taskId: number,
+  ) => {
+    e.stopPropagation();
+
     if (!window.confirm("Delete this task?")) return;
 
     deleteTask.mutate(taskId);
   };
 
-  const handleToggle = (task: Task) => {
+  const handleToggle = (e: React.MouseEvent<HTMLButtonElement>, task: Task) => {
+    e.stopPropagation();
+
     updateTask.mutate({
       id: task.id,
       data: {
@@ -86,6 +96,12 @@ export default function ListDetailPage() {
   if (!list) return <div>No list found</div>;
 
   const formattedDate = new Date(list.createdAt).toLocaleString();
+
+  // const priorityStyles = {
+  //   low: "bg-gray-200 text-gray-700",
+  //   medium: "bg-yellow-200 text-yellow-800",
+  //   high: "bg-red-200 text-red-800",
+  // } as const;
 
   return (
     <div className="min-w-2xl">
@@ -104,6 +120,7 @@ export default function ListDetailPage() {
 
       <TaskFilters
         filters={filters}
+        searchParams={searchParams}
         toggleFilter={toggleFilter}
         setSort={setSort}
         resetFilters={resetFilters}
@@ -137,28 +154,64 @@ export default function ListDetailPage() {
               {tasks?.data?.tasks?.map((task) => {
                 const isDimmed =
                   task.isCompleted && filters.isCompleted !== true;
+
+                const due = getDueDateLabel(task.dueDate);
                 return (
                   <li
                     key={task.id}
-                    className={`border p-2 rounded flex justify-between mb-1
-                      ${isDimmed ? "border-gray-400 bg-gray-200" : ""}  
+                    onClick={() => navigate(`/list/${listId}/task/${task.id}`)}
+                    className={`border p-2 rounded flex flex-1 justify-between items-center 
+                      mb-1 hover:bg-blue-100 cursor-pointer
+                      ${isDimmed ? " opacity-60" : ""}  
                     `}
                   >
-                    <span
-                      onClick={() => handleToggle(task)}
-                      className={`cursor-pointer`}
-                    >
-                      {formatName(task.title)}
-                    </span>
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <button
+                        type="button"
+                        onClick={(e) => handleToggle(e, task)}
+                        className={`
+                            w-4 h-4 rounded border flex items-center justify-center
+                            cursor-pointer shrink-0
+                            ${
+                              task.isCompleted
+                                ? "bg-green-500 border-green-500"
+                                : "border-gray-400 hover:bg-green-200"
+                            }
+                          `}
+                      >
+                        {task.isCompleted && (
+                          <span className="text-white text-[10px]">✓</span>
+                        )}
+                      </button>
 
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-500">
+                      <span className={`truncate`}>
+                        {formatName(task.title)}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`text-xs px-2 py-1 rounded font-medium ${priorityStyles[task.priority]}`}
+                      >
                         {task.priority}
                       </span>
 
+                      {due && (
+                        <span
+                          className={`text-xs px-2 py-1 rounded
+                            ${due.isOverdue ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-600"}  
+                          `}
+                        >
+                          {due.label}
+                        </span>
+                      )}
+
                       <button
-                        className="text-red-500 text-sm cursor-pointer"
-                        onClick={() => handleDeleteTask(task.id)}
+                        className="
+                          text-red-500 border rounded px-1 font-medium text-sm cursor-pointer
+                          hover:bg-red-100
+                        "
+                        onClick={(e) => handleDeleteTask(e, task.id)}
                       >
                         X
                       </button>
