@@ -1,72 +1,47 @@
-const request = require("supertest");
-const createApp = require("./app");
 const { createList } = require("./listsHelper");
 const { createListName, createTaskData } = require("./factory");
 
-const app = createApp();
-
-async function createTask({ taskData, token }) {
-  return request(app)
-    .post("/api/tasks")
-    .set("Authorization", `Bearer ${token}`)
-    .send(taskData);
+async function createTask({ taskData, agent }) {
+  return agent.post("/api/tasks").send(taskData);
 }
 
-async function getAllTasks({ query = {}, token } = {}) {
-  return request(app)
-    .get("/api/tasks")
-    .set("Authorization", `Bearer ${token}`)
-    .query(query);
+async function getAllTasks({ query = {}, agent } = {}) {
+  return agent.get("/api/tasks").query(query);
 }
 
-async function updateTasks({ taskData = {}, taskId, token } = {}) {
-  return request(app)
-    .patch(`/api/tasks/${taskId}`)
-    .set("Authorization", `Bearer ${token}`)
-    .send(taskData);
-}
-
-async function getTaskById({ taskId, token } = {}) {
-  return request(app)
-    .get(`/api/tasks/${taskId}`)
-    .set("Authorization", `Bearer ${token}`);
+async function getTaskById({ taskId, agent } = {}) {
+  return agent.get(`/api/tasks/${taskId}`);
 }
 
 async function createListAndTaskAfterSignIn({
   listName,
   taskOverrides = {},
-  token,
+  agent,
 } = {}) {
-  const list = await createList({ name: createListName(listName), token });
+  const list = await createList({ name: createListName(listName), agent });
   const listId = list.body.data.list.id;
 
   const taskData = createTaskData({ listId, overrides: taskOverrides });
-  const task = await createTask({ taskData, token });
+  const task = await createTask({ taskData, agent });
 
   return {
     list,
     task,
-    token,
+    agent,
   };
 }
 
-async function updateTask({ taskId, token, taskUpdateData = {} } = {}) {
-  return request(app)
-    .patch(`/api/tasks/${taskId}`)
-    .set("Authorization", `Bearer ${token}`)
-    .send(taskUpdateData);
+async function updateTask({ taskId, agent, taskUpdateData = {} } = {}) {
+  return agent.patch(`/api/tasks/${taskId}`).send(taskUpdateData);
 }
 
-async function deleteTask({ taskId, token }) {
-  return request(app)
-    .delete(`/api/tasks/${taskId}`)
-    .set("Authorization", `Bearer ${token}`);
+async function deleteTask({ taskId, agent }) {
+  return agent.delete(`/api/tasks/${taskId}`);
 }
 
 module.exports = {
   createTask,
   getAllTasks,
-  updateTasks,
   getTaskById,
   createListAndTaskAfterSignIn,
   updateTask,

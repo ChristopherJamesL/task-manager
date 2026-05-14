@@ -11,5 +11,6 @@ export function useMeQuery() {
     retry: false,
     staleTime: Infinity,
     refetchOnWindowFocus: false,
+    gcTime: 0,
   });
 }

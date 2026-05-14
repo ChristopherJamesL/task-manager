@@ -10,7 +10,7 @@ A full-stack task management application built with Node.js, Express, PostgreSQL
 
 - React
 - TypeScript
-- React Query (TanStack Query) *(planned / in progress)*
+- React Query (TanStack Query) *(in progress)*
 - TailwindCSS
 
 ### Backend
@@ -18,7 +18,7 @@ A full-stack task management application built with Node.js, Express, PostgreSQL
 - Node.js
 - Express
 - Zod (validation)
-- JWT authentication
+- Redis-backed server-side session authentication (HTTP-only cookies)
 
 ### Database / Infrastructure
 
@@ -31,8 +31,8 @@ A full-stack task management application built with Node.js, Express, PostgreSQL
 ## ✨ Features
 
 - User authentication (register, login, logout)
-- Protected routes with JWT
-- Fetch current user profile (`/api/auth/me`)
+- Session-based authentication with protected routes
+- User profile endpoint (`/api/auth/me`)
 - Task management (create, update, delete)
 - List-based organization for tasks
 - Advanced task querying:
@@ -40,7 +40,7 @@ A full-stack task management application built with Node.js, Express, PostgreSQL
   - Sorting (created date, due date)
   - Cursor-based pagination (efficient + scalable)
 - Rate limiting for login attempts (Redis-backed)
-- Automated integration tests for core CRUD flows (Jest + Supertest)
+- Full integration test coverage for core API flows
 
 ---
 
@@ -90,37 +90,21 @@ Located in `/client`
 
 ## Current Features (WIP)
 
-- Sign in / register flows
-- Authentication flows using TanStack Query (React Query)
-- Protected dashboard layout
-- Navbar with logout functionality
+- Authentication flows (login/register)
+- Protected routes and dashboard layout
+- Navbar with logout support
+- React Query-based server state management
 
 ## Architecture Notes
 
 - Feature-based frontend architecture (auth module isolated under `/features`)
 - Server state managed with TanStack Query (React Query)
-- Authentication handled via query/mutation hooks (useMeQuery, useSignInMutation, etc.)
-- JWT stored in localStorage and attached via Axios interceptor
-- API layer split into feature-based modules (`features/auth/api`)
-- UI separated into:
-  - `features/*` (domain-specific logic + pages)
-  - `components/*` (reusable UI primitives)
-  - `components/layout/*` (layout components like Navbar)
-
-## Frontend State Architecture
-
-- Server state (auth, user data) managed by TanStack Query
-- Query-driven authentication using `/auth/me`
-- Local UI state handled with React hooks
-
-## Architecture Principles
-
-- Feature-based modular design
-- Separation of UI, state, and API layers
-- Server state decoupled from UI state (TanStack Query)
-- Hybrid authentication flow:
-  - Declarative route protection using query state (`/auth/me`)
-  - Imperative navigation on auth mutations (login/logout)
+- Authentication via HTTP-only cookies (no client-side tokens)
+- Client uses credentials: "include" for authenticated requests.
+- Clear separation of:
+  - feature logic
+  - reusable UI components
+  - layout components
 
 ---
 
@@ -128,22 +112,22 @@ Located in `/client`
 
 ## Current Features
 
-- JWT authentication system
-- Rate limiting with Redis
+- Session-based authentication (Redis + HTTP-only cookies)
+- Redis-backed rate limiting
 - Task & list APIs
-- Input validation with Zod
+- Input validation using Zod
 - Integration tests (Jest + Supertest)
 
 ## 🧠 Architecture Notes
 
-- Feature-based backend architecture (auth, tasks, lists separated by modules):
+- Feature-based modular design:
   - router
   - controller
-  - model
   - service
+  - model
 - Clear separation of concerns:
   - Controllers → handle HTTP layer
-  - Services → business logic (being introduced)
+  - Services → business logic
   - Models → database queries
 - Server startup is explicitly managed:
   - PostgreSQL connection is verified on startup
@@ -166,7 +150,6 @@ npm install
 PORT=8000
 DATABASE_URL=your_postgres_connection_string
 REDIS_URL=your_redis_connection_string
-JWT_SECRET=your_jwt_secret
 ```
 
 3. Run the server  
@@ -255,34 +238,46 @@ Base URL:
 - PATCH /api/lists/:id
 - DELETE /api/lists/:id
 
-## 🔐 Security & Reliability
+## 🔐 Authentication & Security
 
-- JWT-based authentication
-- Rate limiting on login endpoints (prevents brute-force attacks)
-- Input validation using Zod
+- Session-based authentication
+- Session ID stored in HTTP-only cookie (`sid`)
+- Session state stored in Redis
+- Sessions expire after 7 days (configurable TTL)
+- Server-side session validation on protected routes
+- Login creates session + stores in Redis
+- Logout destroys Redis session and clears cookie
+
+- Rate limiting applied to authentication endpoints
+- Input validation enforced using Zod
 - Structured error and success responses
 
 ## 🔧 Logging
 
-- Structured logging is implemented using Pino and Pino HTTP.
-- Request logging includes method, URL, query parameters, and route params.
-- Error logging captures minimal request info (method, url) and the error object with stack trace.
-- Sensitive data (passwords, tokens, headers, request body) is never logged.
+- Logging powered by Pino + Pino HTTP
+- Request logging includes method, URL, query, and params.
+- Error logs include minimal request context and stack traces
+- Sensitive data (passwords, bodies) is never logged
 - Logs are categorized by level:
   - INFO → all completed requests
   - ERROR → operational and unexpected errors
 
 ## 🧪 Testing
 
-This project uses automated integration tests with Jest and Supertest.
+- Full integration testing using Jest + Supertest
+- Tests simulate real HTTP flows using persistent agents (cookie-based sessions)
+- Covers:
+  - Authentication (register, signin, protected routes)
+  - Task CRUD operations (create, update, delete, fetch)
+  - List management
+  - Input validation using Zod schemas
+  - Authorization and error handling (401, 404, validation errors)
 
-The test suite covers full API flows including:
+### Testing Environment
 
-- Authentication (register, signin, protected routes)
-- Task CRUD operations (create, update, delete, fetch)
-- List management
-- Input validation using Zod schemas
-- Authorization and error handling (401, 404, validation errors)
+- Separate PostgreSQL test database
+- Separate Redis instance
+- Clean state between tests
 
 ### Setup
 
@@ -291,7 +286,6 @@ Create a `.env.test` file in the `/server` directory with the following variable
   ```env
   DATABASE_URL=your_test_database_url 
   REDIS_URL=your_test_redis_url 
-  JWT_SECRET=your_test_secret
   ```
 
 - Ensure that the test database is separate from your development database.
@@ -308,16 +302,12 @@ npm test
 
 ## ⚙️ CI/CD
 
-This project uses GitHub Actions for continuous integration.
+GitHub Actions pipeline:
 
-On every push and pull request, the CI pipeline:
-
-- Spins up a PostgreSQL 16 container
-- Spins up a Redis 7 container
+- Spins up a PostgreSQL 16
+- Spins up a Redis 7
 - Runs database schema and index initialization
 - Executes the full Jest + Supertest integration test suite
-
-This ensures all API features are tested against a real database environment in isolation.
 
 ## 📈 Future Improvements
 

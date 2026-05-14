@@ -12,8 +12,8 @@ function createUser(overrides = {}) {
   counter++;
 
   return {
-    username: `testUser${counter}`,
-    email: `testUser${counter}@example.com`,
+    username: `testuser${counter}`,
+    email: `testuser${counter}@example.com`,
     password: "123",
     ...overrides,
   };

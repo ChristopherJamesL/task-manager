@@ -12,7 +12,7 @@ async function getAllLists(userId) {
   const lists = await getAllListsModel(userId);
   const mappedLists = lists.map(mapList);
 
-  return { lists: mappedLists };
+  return mappedLists;
 }
 
 async function getListById({ userId, listId }) {
@@ -20,7 +20,7 @@ async function getListById({ userId, listId }) {
 
   if (!list) throw new NotFoundError("List not found");
 
-  return { list: mapList(list) };
+  return mapList(list);
 }
 
 async function createList({ userId, name }) {
@@ -29,7 +29,7 @@ async function createList({ userId, name }) {
   try {
     const list = await createListModel(userId, normalizeName);
 
-    return { list: mapList(list) };
+    return mapList(list);
   } catch (err) {
     if (err.code === "23505") {
       throw new ConflictError("List name already exists");
@@ -46,7 +46,7 @@ async function updateList({ userId, name, listId }) {
 
     if (!list) throw new NotFoundError("List not found");
 
-    return { list: mapList(list) };
+    return mapList(list);
   } catch (err) {
     if (err.code === "23505")
       throw new ConflictError("List name already exists");
@@ -60,7 +60,7 @@ async function deleteList({ userId, listId }) {
 
   if (!list) throw new NotFoundError("List not found");
 
-  return { list: mapList(list) };
+  return mapList(list);
 }
 
 module.exports = {

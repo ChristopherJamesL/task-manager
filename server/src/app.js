@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const { httpLogger } = require("./utils/logger");
 
 const authRouter = require("./features/auth/auth.router");
@@ -18,6 +19,8 @@ function createApp() {
   );
 
   app.use(express.json());
+  app.use(cookieParser());
+
   app.use(httpLogger);
 
   app.use("/api/auth", authRouter);

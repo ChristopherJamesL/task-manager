@@ -1,27 +1,27 @@
-const jwt = require("jsonwebtoken");
 const { UnauthorizedError } = require("../utils/errors");
+const { getRedisClient } = require("../db/redis");
 
-function requireAuth(req, res, next) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) throw new UnauthorizedError("Authorization header missing");
-
-  const parts = authHeader.split(" ");
-  if (parts.length > 2 || parts[0] !== "Bearer")
-    throw new UnauthorizedError("Invalid authorization format");
-
-  const token = parts[1];
-  if (parts[0] && !token) throw new UnauthorizedError("Token missing");
-
+async function requireAuth(req, res, next) {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sessionId = req.cookies.sid;
+
+    if (!sessionId) throw new UnauthorizedError("Not authenticated");
+
+    const redis = getRedisClient();
+
+    const sessionData = await redis.get(`session:${sessionId}`);
+
+    if (!sessionData) throw new UnauthorizedError("Session expired or invalid");
+
+    const session = JSON.parse(sessionData);
 
     req.user = {
-      userId: decoded.userId,
+      userId: session.userId,
     };
 
     next();
   } catch (err) {
-    throw new UnauthorizedError("Invalid or expired token");
+    throw new UnauthorizedError("Not authenticated");
   }
 }
 
