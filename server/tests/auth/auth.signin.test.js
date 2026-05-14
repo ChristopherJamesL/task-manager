@@ -14,9 +14,7 @@ describe("Auth - Sign In", () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body.success).toBe(true);
-
-    expect(response.body.data).toHaveProperty("token");
-    expect(response.body.data.user.email).toBe(userData.email.toLowerCase());
+    expect(response.body.data.user.email).toBe(userData.email);
   });
 
   test("It should sign in an existing user with username", async () => {
@@ -31,8 +29,6 @@ describe("Auth - Sign In", () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body.success).toBe(true);
-
-    expect(response.body.data).toHaveProperty("token");
     expect(response.body.data.user.username).toBe(userData.username);
   });
 

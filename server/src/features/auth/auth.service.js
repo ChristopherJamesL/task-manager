@@ -1,6 +1,7 @@
 const db = require("../../db/database");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const { getRedisClient } = require("../../db/redis");
 const {
   createUser,
   createAuth,
@@ -36,6 +37,7 @@ async function registerUser({ username, email, password }) {
 }
 
 async function signInUser({ identifier, password, ipAddr }) {
+  const redis = getRedisClient();
   const user = await findUserWithPassword(identifier);
 
   if (!user) {
@@ -50,17 +52,22 @@ async function signInUser({ identifier, password, ipAddr }) {
     throw new UnauthorizedError("Invalid credentials");
   }
 
-  const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-    expiresIn: "1hr",
-  });
+  const sessionId = crypto.randomUUID();
+
+  await redis.set(
+    `session:${sessionId}`,
+    JSON.stringify({ userId: user.id }),
+    "EX",
+    60 * 60 * 24 * 7,
+  );
 
   return {
-    token,
     user: {
       id: user.id,
       username: user.username,
       email: user.email,
     },
+    sessionId,
   };
 }
 
@@ -69,9 +76,7 @@ async function me(userId) {
 
   if (!user) throw new NotFoundError("User not found");
 
-  return {
-    user,
-  };
+  return user;
 }
 
 module.exports = {

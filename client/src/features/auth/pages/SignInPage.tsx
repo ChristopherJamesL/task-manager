@@ -10,6 +10,7 @@ import type { ApiErrorResponse } from "../../../types/api.types";
 export default function SigninPage() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const signInMutation = useSignInMutation();
@@ -24,20 +25,26 @@ export default function SigninPage() {
 
       navigate("/dashboard");
     } catch (err) {
-      console.log("Sign in failed: ", err);
+      console.log("error: ", err);
+
+      const message =
+        (err as AxiosError<ApiErrorResponse>)?.response?.data?.error?.message ||
+        "Something went wrong";
+
+      setErrorMessage(message);
     }
   };
 
-  const errorMessage = signInMutation.isError
-    ? (signInMutation.error as AxiosError<ApiErrorResponse>)?.response?.data
-        ?.error?.message || "Something went wrong"
-    : null;
+  // const errorMessage = signInMutation.isError
+  //   ? (signInMutation.error as AxiosError<ApiErrorResponse>)?.response?.data
+  //       ?.error?.message || "Something went wrong"
+  //   : null;
 
   return (
     <AuthCard>
       <h1 className="text-xl font-semibold mb-4">Sign in</h1>
 
-      <form onSubmit={handleSignIn}>
+      <form onSubmit={handleSignIn} className="space-y-3">
         <Input
           name="identifier"
           type="text"
@@ -60,7 +67,7 @@ export default function SigninPage() {
           {signInMutation.isPending ? "Signing in..." : "Sign in"}
         </Button>
 
-        {errorMessage && <p className="mt-3 text-sm">{errorMessage}</p>}
+        {errorMessage && <p className="text-sm">{errorMessage}</p>}
 
         <p className="mt-3 text-sm">
           Don't have an account?{" "}

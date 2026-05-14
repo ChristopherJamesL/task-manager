@@ -1,42 +1,21 @@
-const request = require("supertest");
-const createApp = require("./app");
-
-const app = createApp();
-
-async function createList({ name, token }) {
-  const nameString = name.toString();
-
-  return request(app)
-    .post("/api/lists")
-    .set("Authorization", `Bearer ${token}`)
-    .send({
-      name: nameString,
-    });
+async function createList({ name, agent }) {
+  return agent.post("/api/lists").send({ name });
 }
 
-async function getAllLists({ token } = {}) {
-  return request(app).get("/api/lists").set("Authorization", `Bearer ${token}`);
+async function getAllLists({ agent } = {}) {
+  return agent.get("/api/lists");
 }
 
-async function getListById({ listId, token }) {
-  return request(app)
-    .get(`/api/lists/${listId}`)
-    .set("Authorization", `Bearer ${token}`);
+async function getListById({ listId, agent }) {
+  return agent.get(`/api/lists/${listId}`);
 }
 
-async function updateList({ listId, name, token }) {
-  return request(app)
-    .patch(`/api/lists/${listId}`)
-    .set("Authorization", `Bearer ${token}`)
-    .send({
-      name: name,
-    });
+async function updateList({ listId, name, agent }) {
+  return agent.patch(`/api/lists/${listId}`).send({ name });
 }
 
-async function deleteList({ listId, token }) {
-  return request(app)
-    .delete(`/api/lists/${listId}`)
-    .set("Authorization", `Bearer ${token}`);
+async function deleteList({ listId, agent }) {
+  return agent.delete(`/api/lists/${listId}`);
 }
 
 module.exports = {

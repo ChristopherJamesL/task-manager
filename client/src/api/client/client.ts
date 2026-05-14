@@ -1,7 +1,8 @@
 import axios from "axios";
-import { getToken, removeToken } from "../../features/auth/api/auth.token";
+import { getToken /*removeToken*/ } from "../../features/auth/api/auth.token";
+import { handleAuthFailure } from "../../features/auth/core/authFailure";
 
-let isRedirecting = false;
+// let isRedirecting = false;
 
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -23,13 +24,17 @@ apiClient.interceptors.response.use(
   (error) => {
     const status = error?.response.status;
 
-    if (status === 401 && !isRedirecting) {
-      isRedirecting = true;
-
-      removeToken();
-
-      window.location.href = "/signin";
+    if (status === 401) {
+      handleAuthFailure();
     }
+
+    // if (status === 401 && !isRedirecting) {
+    //   isRedirecting = true;
+
+    //   removeToken();
+
+    //   window.location.href = "/signin";
+    // }
 
     return Promise.reject(error);
   },

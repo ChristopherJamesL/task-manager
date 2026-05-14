@@ -5,7 +5,7 @@ import { formatDate } from "../../../utils/formatDate";
 import { priorityStyles } from "../../../utils/priorityStyles";
 
 export default function TaskPage() {
-  const { listId, taskId } = useParams();
+  const { taskId } = useParams();
 
   const parsedTaskId = Number(taskId);
 

@@ -8,19 +8,19 @@ const {
 } = require("./lists.service");
 
 async function httpGetAllLists(req, res) {
-  const result = await getAllLists(req.user.userId);
+  const lists = await getAllLists(req.user.userId);
 
-  return sendSuccess(res, { data: result });
+  return sendSuccess(res, { data: { lists } });
 }
 
 async function httpGetListById(req, res) {
   const userId = req.user.userId;
   const listId = req.params.id;
 
-  const result = await getListById({ userId, listId });
+  const list = await getListById({ userId, listId });
 
   return sendSuccess(res, {
-    data: result,
+    data: { list },
   });
 }
 
@@ -28,10 +28,10 @@ async function httpCreateList(req, res) {
   const userId = req.user.userId;
   const { name } = req.body;
 
-  const result = await createList({ userId, name });
+  const list = await createList({ userId, name });
 
   return sendSuccess(res, {
-    data: result,
+    data: { list },
     status: 201,
   });
 }
@@ -41,10 +41,10 @@ async function httpUpdateList(req, res) {
   const { name } = req.body;
   const listId = req.params.id;
 
-  const result = await updateList({ userId, listId, name });
+  const list = await updateList({ userId, listId, name });
 
   return sendSuccess(res, {
-    data: result,
+    data: { list },
   });
 }
 
@@ -52,10 +52,10 @@ async function httpDeleteList(req, res) {
   const userId = req.user.userId;
   const listId = req.params.id;
 
-  const result = await deleteList({ userId, listId });
+  const list = await deleteList({ userId, listId });
 
   return sendSuccess(res, {
-    data: result,
+    data: { list },
   });
 }
 

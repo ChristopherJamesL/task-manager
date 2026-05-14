@@ -1,22 +1,26 @@
+const request = require("supertest");
+const createApp = require("../setup/app");
 const { createAuthenticatedUser } = require("../setup/authHelper");
 const {
   getTaskById,
   createListAndTaskAfterSignIn,
 } = require("../setup/tasksHelper");
 
+const app = createApp();
+
 describe("Tasks - Get By Id", () => {
   test("It should return a single task by id", async () => {
-    const { token } = await createAuthenticatedUser();
+    const { agent } = await createAuthenticatedUser();
 
     const createListAndTask = await createListAndTaskAfterSignIn({
       listName: "my-list",
       taskOverrides: { title: "my-task" },
-      token,
+      agent,
     });
 
     const taskId = createListAndTask.task.body.data.task.id;
 
-    const response = await getTaskById({ taskId, token });
+    const response = await getTaskById({ taskId, agent });
 
     expect(response.statusCode).toBe(200);
     expect(response.body.data.task).toEqual(
@@ -28,30 +32,30 @@ describe("Tasks - Get By Id", () => {
   });
 
   test("It should return 404 if task does not exist", async () => {
-    const { token } = await createAuthenticatedUser();
+    const { agent } = await createAuthenticatedUser();
 
-    const response = await getTaskById({ taskId: 100, token });
+    const response = await getTaskById({ taskId: 100, agent });
 
     expect(response.statusCode).toBe(404);
   });
 
   test("It should not allow access to another user's task", async () => {
-    const userA = await createAuthenticatedUser();
-    const userB = await createAuthenticatedUser();
+    const { agent: agentA } = await createAuthenticatedUser();
+    const { agent: agentB } = await createAuthenticatedUser();
 
     const createListAndTask = await createListAndTaskAfterSignIn({
-      token: userA.token,
+      agent: agentA,
     });
 
     const taskId = createListAndTask.task.body.data.task.id;
 
-    const response = await getTaskById({ taskId, token: userB.token });
+    const response = await getTaskById({ taskId, agent: agentB });
 
     expect(response.statusCode).toBe(404);
   });
 
-  test("It should return 401 if no token", async () => {
-    const response = await getTaskById({ taskId: 1 });
+  test("It should return 401 if no authenticated user", async () => {
+    const response = await request(app).get(`/api/tasks/1`);
 
     expect(response.statusCode).toBe(401);
   });

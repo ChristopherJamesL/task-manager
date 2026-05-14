@@ -15,24 +15,30 @@ async function signInUser({ identifier, password }) {
   });
 }
 
+async function logoutUser({ agent }) {
+  return agent.post("/api/auth/logout");
+}
+
 async function createAuthenticatedUser(overrides = {}) {
   const userData = createUser(overrides);
 
-  await request(app).post("/api/auth/register").send(userData);
+  const agent = request.agent(app);
 
-  const response = await request(app).post("/api/auth/signin").send({
-    identifier: userData.email,
-    password: userData.password,
-  });
+  await agent.post("/api/auth/register").send(userData);
+
+  const res = await agent
+    .post("/api/auth/signin")
+    .send({ identifier: userData.email, password: userData.password });
 
   return {
-    user: response.body.data.user,
-    token: response.body.data.token,
+    user: res.body.data.user,
+    agent,
   };
 }
 
 module.exports = {
   registerUser,
   signInUser,
+  logoutUser,
   createAuthenticatedUser,
 };

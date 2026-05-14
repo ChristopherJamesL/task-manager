@@ -11,15 +11,26 @@ async function httpSignIn(req, res) {
   const { identifier, password } = req.body;
   const ipAddr = req.ip;
 
-  const result = await signInUser({ identifier, password, ipAddr });
+  const { user, sessionId } = await signInUser({
+    identifier,
+    password,
+    ipAddr,
+  });
 
-  return sendSuccess(res, { data: result });
+  res.cookie("sid", sessionId, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
+  return sendSuccess(res, { data: { user } });
 }
 
 async function httpMe(req, res) {
-  const result = await me(req.user.userId);
+  const user = await me(req.user.userId);
 
-  return sendSuccess(res, { data: result });
+  return sendSuccess(res, { data: { user } });
 }
 
 async function httpLogout(req, res) {
