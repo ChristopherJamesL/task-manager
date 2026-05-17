@@ -1,15 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { taskService } from "../services/tasks.service";
 import { normalizeTaskParams } from "../utils/normalizeTaskParams";
-import { stableStringify } from "../../../utils/queryKeys";
 import type { GetTaskParams } from "../types/tasks.request.types";
 
 export function useTasksQuery(params?: GetTaskParams) {
-  const normalized = normalizeTaskParams(params);
+  const normalizedParams = normalizeTaskParams(params);
 
   return useQuery({
-    queryKey: ["tasks", stableStringify(normalized)],
-    queryFn: () => taskService.getTasks(normalized),
+    queryKey: ["tasks", normalizedParams],
+    queryFn: () => taskService.getTasks(normalizedParams),
     placeholderData: (prev) => prev,
   });
 }

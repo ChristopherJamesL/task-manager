@@ -79,8 +79,15 @@ async function me(userId) {
   return user;
 }
 
+async function logoutUser(sessionId) {
+  const redis = getRedisClient();
+
+  await redis.del(`session:${sessionId}`);
+}
+
 module.exports = {
   registerUser,
   signInUser,
   me,
+  logoutUser,
 };

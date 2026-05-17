@@ -9,8 +9,8 @@ export function useLogoutMutation() {
   return useMutation({
     mutationFn: authService.logout,
 
-    onSuccess: () => {
-      queryClient.removeQueries({ queryKey: ["me"] });
+    onSettled: () => {
+      queryClient.setQueryData(["me"], null);
       navigate("/signin", { replace: true });
     },
   });
