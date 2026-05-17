@@ -21,14 +21,14 @@ export default function RegisterPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const registerResult = await registerMutation.mutateAsync({
+      await registerMutation.mutateAsync({
         username,
         email,
         password,
       });
 
       await signInMutation.mutateAsync({
-        identifier: registerResult.email,
+        identifier: email,
         password,
       });
 

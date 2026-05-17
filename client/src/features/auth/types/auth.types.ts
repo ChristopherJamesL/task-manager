@@ -1,7 +1,6 @@
 import type { ApiResponse } from "../../../types/api.types";
 
 export type SigninPayload = {
-  token: string;
   user: User;
 };
 
@@ -33,8 +32,6 @@ export type RegisterResponse = ApiResponse<UserPayload>;
 export type MeResponse = ApiResponse<UserPayload>;
 
 export type LogoutResponse = ApiResponse<LogoutPayload>;
-
-export type TokenType = string;
 
 // export type ApiError = {
 //   error: {

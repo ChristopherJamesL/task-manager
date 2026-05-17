@@ -3,7 +3,7 @@ import { listService } from "../services/lists.service";
 
 export function useListsQuery() {
   return useQuery({
-    queryKey: ["lists", "all"],
+    queryKey: ["lists"],
     queryFn: listService.getLists,
   });
 }

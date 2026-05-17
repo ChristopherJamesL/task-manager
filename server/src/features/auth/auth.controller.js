@@ -1,4 +1,4 @@
-const { registerUser, signInUser, me } = require("./auth.service");
+const { registerUser, signInUser, me, logoutUser } = require("./auth.service");
 const { sendSuccess } = require("../../utils/response");
 
 async function httpRegister(req, res) {
@@ -34,6 +34,15 @@ async function httpMe(req, res) {
 }
 
 async function httpLogout(req, res) {
+  await logoutUser(req.sessionId);
+
+  res.clearCookie("sid", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+  });
+
   return sendSuccess(res, {
     data: { message: "Logged out successfully" },
   });

@@ -8,7 +8,9 @@ export function useUpdateTaskMutation() {
     mutationFn: ({ id, data }: { id: number; data: UpdateTask }) =>
       taskService.updateTask(id, data),
 
-    onSuccess: () => {
+    onSuccess: (updatedTask) => {
+      queryClient.setQueryData(["tasks", updatedTask.id], updatedTask);
+
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
   });

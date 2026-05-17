@@ -6,8 +6,8 @@ export function useSignInMutation() {
   return useMutation({
     mutationFn: authService.signIn,
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["me"] });
+    onSuccess: (user) => {
+      queryClient.setQueryData(["me"], user);
     },
   });
 }
