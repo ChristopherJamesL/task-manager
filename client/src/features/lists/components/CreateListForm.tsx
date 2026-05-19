@@ -1,4 +1,6 @@
 import { useState } from "react";
+import Input from "../../../components/Input";
+import Button from "../../../components/Button";
 
 export default function CreateListForm({
   onCreate,
@@ -20,22 +22,22 @@ export default function CreateListForm({
   };
 
   return (
-    <form className="flex mb-2 justify-between" onSubmit={handleSubmit}>
-      <input
+    <form className="flex mb-6 gap-2" onSubmit={handleSubmit}>
+      <Input
         type="text"
-        className="border min-w-2xs"
         value={name}
         placeholder="New list name"
+        disabled={isPending}
         onChange={(e) => setName(e.target.value)}
       />
 
-      <button
-        className="border bg-blue-400 cursor-pointer"
+      <Button
+        className="w-auto shrink-0 px-4 bg-blue-400 hover:bg-blue-600"
         type="submit"
         disabled={isPending}
       >
-        Create
-      </button>
+        {isPending ? "Creating..." : "Create"}
+      </Button>
     </form>
   );
 }

@@ -25,8 +25,6 @@ export default function SigninPage() {
 
       navigate("/dashboard");
     } catch (err) {
-      console.log("error: ", err);
-
       const message =
         (err as AxiosError<ApiErrorResponse>)?.response?.data?.error?.message ||
         "Something went wrong";
@@ -34,11 +32,6 @@ export default function SigninPage() {
       setErrorMessage(message);
     }
   };
-
-  // const errorMessage = signInMutation.isError
-  //   ? (signInMutation.error as AxiosError<ApiErrorResponse>)?.response?.data
-  //       ?.error?.message || "Something went wrong"
-  //   : null;
 
   return (
     <AuthCard>
@@ -51,25 +44,31 @@ export default function SigninPage() {
           autoComplete="username"
           placeholder="Email or username"
           value={identifier}
+          disabled={signInMutation.isPending}
           onChange={(e) => setIdentifier(e.target.value)}
         />
 
         <Input
           name="password"
           type="password"
-          autoComplete="password"
+          autoComplete="current-password"
           placeholder="Password"
           value={password}
+          disabled={signInMutation.isPending}
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <Button type="submit" disabled={signInMutation.isPending}>
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={signInMutation.isPending}
+        >
           {signInMutation.isPending ? "Signing in..." : "Sign in"}
         </Button>
 
-        {errorMessage && <p className="text-sm">{errorMessage}</p>}
+        {errorMessage && <p className="text-sm text-red-500">{errorMessage}</p>}
 
-        <p className="mt-3 text-sm">
+        <p className="text-sm">
           Don't have an account?{" "}
           <Link className="text-blue-600 cursor-pointer" to="/register">
             Register

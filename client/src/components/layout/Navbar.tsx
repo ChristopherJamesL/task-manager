@@ -1,6 +1,8 @@
 import { Link } from "react-router";
 import { useLogoutMutation } from "../../features/auth/queries/useLogoutMutation";
 import { useAuth } from "../../features/auth/hooks/useAuth";
+import { formatName } from "../../utils/format";
+import Button from "../Button";
 
 export default function Navbar() {
   const { user, isLoading } = useAuth();
@@ -10,43 +12,52 @@ export default function Navbar() {
     logoutMutation.mutate();
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex min-w-screen p-2 border-b border-b-gray-300 justify-between">
-        <span className="text-blue-500 text-3xl">Task Manager</span>
-        <span>...</span>
-      </div>
-    );
-  }
-
   return (
-    <div
-      className="
-        flex 
-        min-w-screen  
-        p-2 
-        border-b 
-        border-b-gray-300 
-        items-center
-        justify-between 
+    <nav className="w-full border-b border-gray-300">
+      <div
+        className="
+          mx-auto
+          flex 
+          max-w-6xl
+          items-center
+          justify-between 
+          px-4
+          py-3
         "
-    >
-      <Link className="text-blue-500 text-3xl" to="/">
-        Task Manager
-      </Link>
-      <span>
-        {user ? (
-          <button
-            className="cursor-pointer"
-            onClick={handleSignout}
-            disabled={logoutMutation.isPending}
-          >
-            Logout {user.username}
-          </button>
+      >
+        <Link className="font-semibold text-2xl text-blue-600" to="/">
+          Task Manager
+        </Link>
+
+        {isLoading ? (
+          <span className="text-sm text-gray-500">Loading...</span>
+        ) : user ? (
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-gray-600">
+              {formatName(user.username)}
+            </span>
+
+            <Link
+              to="/dashboard"
+              className="bg-green-500 px-4 py-2 text-sm text-white rounded hover:bg-green-600"
+            >
+              Dashboard
+            </Link>
+
+            <Button
+              onClick={handleSignout}
+              disabled={logoutMutation.isPending}
+              className="bg-red-500 px-3 py-1 text-sm hover:bg-red-600"
+            >
+              {logoutMutation.isPending ? "Signing out..." : "Logout"}
+            </Button>
+          </div>
         ) : (
-          <Link to="/signin">Sign in</Link>
+          <Link className="text-sm text-blue-600 hover:underline" to="/signin">
+            SignIn
+          </Link>
         )}
-      </span>
-    </div>
+      </div>
+    </nav>
   );
 }

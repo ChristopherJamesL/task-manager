@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 import { useListsQuery } from "../queries/useListsQuery";
 import { useCreateListMutation } from "../queries/useCreateListMutation";
 import ListCard from "../components/ListCard";
@@ -19,15 +19,25 @@ export default function ListsPage() {
   };
 
   return (
-    <div className="min-w-2xl">
-      <div className="flex justify-between mb-2 ">
-        <h1 className="font-semibold text-xl">Lists</h1>
-        <button
-          className="border bg-amber-600 cursor-pointer"
+    <div className="w-full max-w-3xl">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="font-semibold text-2xl">Lists</h1>
+
+        <Link
+          to="/dashboard"
+          className=" 
+            rounded 
+            bg-green-500 
+            text-white 
+            px-3 
+            py-1 
+            text-sm 
+            hover:bg-green-600 
+            cursor-pointer"
           onClick={handleNavigate}
         >
           Dashboard
-        </button>
+        </Link>
       </div>
 
       <CreateListForm
@@ -36,9 +46,11 @@ export default function ListsPage() {
       />
 
       {lists?.length === 0 ? (
-        <p>No lists yet</p>
+        <div className="border rounded p-6 text-center text-gray-500">
+          No lists yet
+        </div>
       ) : (
-        <ul className="flex flex-col">
+        <ul className="space-y-3">
           {lists?.map((list) => {
             return <ListCard key={list.id} list={list} />;
           })}
