@@ -8,6 +8,7 @@ import ListsPage from "./features/lists/pages/ListsPage";
 import ListDetailPage from "./features/lists/pages/ListDetailPage";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import TaskPage from "./features/tasks/pages/TaskPage";
+import TasksPage from "./features/tasks/pages/TasksPage";
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
             <Route path="/lists" element={<ListsPage />} />
             <Route path="/lists/:id" element={<ListDetailPage />} />
             <Route path="/list/:listId/task/:taskId" element={<TaskPage />} />
+            <Route path="/tasks" element={<TasksPage />} />
           </Route>
         </Routes>
       </main>

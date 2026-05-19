@@ -7,7 +7,9 @@ export function useDeleteListMutation() {
   return useMutation({
     mutationFn: (id: number) => listService.deleteList(id),
 
-    onSuccess: () => {
+    onSuccess: (_, deletedId) => {
+      queryClient.removeQueries({ queryKey: ["lists", deletedId] });
+
       queryClient.invalidateQueries({ queryKey: ["lists"] });
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },

@@ -50,13 +50,14 @@ export default function RegisterPage() {
   return (
     <AuthCard>
       <h1 className="text-xl font-semibold mb-4">Register</h1>
-      <form onSubmit={handleRegister}>
+      <form onSubmit={handleRegister} className="space-y-3">
         <Input
           name="username"
           type="text"
           autoComplete="username"
           placeholder="Username"
           value={username}
+          disabled={registerMutation.isPending || signInMutation.isPending}
           onChange={(e) => setUsername(e.target.value)}
         />
 
@@ -66,27 +67,30 @@ export default function RegisterPage() {
           autoComplete="email"
           placeholder="Email"
           value={email}
+          disabled={registerMutation.isPending || signInMutation.isPending}
           onChange={(e) => setEmail(e.target.value)}
         />
 
         <Input
           name="password"
           type="password"
-          autoComplete="password"
+          autoComplete="new-password"
           placeholder="Password"
           value={password}
+          disabled={registerMutation.isPending || signInMutation.isPending}
           onChange={(e) => setPassword(e.target.value)}
         />
         <Button
           type="submit"
+          className="w-full"
           disabled={registerMutation.isPending || signInMutation.isPending}
         >
           {registerMutation.isPending ? "Creating account..." : "Register"}
         </Button>
 
-        {errorMessage && <p className="mt-3 text-sm">{errorMessage}</p>}
+        {errorMessage && <p className="text-sm text-red-500">{errorMessage}</p>}
 
-        <p className="mt-3 text-sm">
+        <p className="text-sm">
           Already have an account?{" "}
           <Link className="text-blue-600 cursor-pointer" to="/signin">
             Sign in
