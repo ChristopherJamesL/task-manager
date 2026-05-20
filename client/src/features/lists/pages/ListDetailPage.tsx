@@ -1,25 +1,31 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useListQuery } from "../queries/useListQuery";
 import { useTasksQuery } from "../../tasks/queries/useTasksQuery";
+import { useUpdateListMutation } from "../queries/useUpdateListMutation";
+import { useDeleteListMutation } from "../queries/useDeleteListMutation";
 import { useCreateTaskMutation } from "../../tasks/queries/useCreateTaskMutation";
 import { useUpdateTaskMutation } from "../../tasks/queries/useUpdateTaskMutation";
-import { useDeleteListMutation } from "../queries/useDeleteListMutation";
 import { useDeleteTaskMutation } from "../../tasks/queries/useDeleteTaskMutation";
 import { useTaskFilters } from "../../tasks/hooks/useTaskFilters";
 import { formatName } from "../../../utils/format";
+import TaskListItem from "../../tasks/components/TaskListItem";
 import TaskFilters from "../../tasks/components/TaskFilters";
-import { getDueDateLabel } from "../../tasks/utils/getDueDateLabel";
-import { priorityStyles } from "../../../utils/priorityStyles";
+import Button from "../../../components/Button";
+import Input from "../../../components/Input";
 import type { Task } from "../../tasks/types/task.types";
 
 export default function ListDetailPage() {
   const [title, setTitle] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [listName, setListName] = useState("");
 
   const { filters, searchParams, toggleFilter, setSort, resetFilters } =
     useTaskFilters();
 
   const navigate = useNavigate();
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const { id } = useParams();
   const listId = Number(id);
@@ -28,6 +34,7 @@ export default function ListDetailPage() {
   const updateTask = useUpdateTaskMutation();
   const deleteList = useDeleteListMutation();
   const deleteTask = useDeleteTaskMutation();
+  const updateList = useUpdateListMutation();
 
   const {
     data: list,
@@ -53,6 +60,24 @@ export default function ListDetailPage() {
       },
       {
         onSuccess: () => setTitle(""),
+      },
+    );
+  };
+
+  const handleUpdateList = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!listName.trim()) return;
+
+    updateList.mutate(
+      {
+        listId,
+        name: listName,
+      },
+      {
+        onSuccess: () => {
+          setIsEditing(false);
+        },
       },
     );
   };
@@ -91,6 +116,24 @@ export default function ListDetailPage() {
     });
   };
 
+  const handleEdit = () => {
+    if (!list) return;
+
+    setListName(list.name);
+    setIsEditing(true);
+
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
+  };
+
+  const handleKeyDownEscape = (e: React.KeyboardEvent) => {
+    if (e.key !== "Escape" || !list) return;
+
+    setListName(list.name);
+    setIsEditing(false);
+  };
+
   if (listLoading || tasksLoading) return <div>Loading...</div>;
   if (listError || tasksError) return <div>Failed to load</div>;
   if (!list) return <div>No list found</div>;
@@ -99,15 +142,63 @@ export default function ListDetailPage() {
 
   return (
     <div className="min-w-2xl">
-      <div className="flex justify-between items-center">
-        <h1 className="text-xl font-semibold mb-1">{formatName(list?.name)}</h1>
+      <div className="flex justify-between items-center gap-4">
+        <div className="flex items-center gap-2 flex-1">
+          {isEditing ? (
+            <form
+              onSubmit={(e) => handleUpdateList(e)}
+              onKeyDown={handleKeyDownEscape}
+              className="flex items-center gap-2 flex-1"
+            >
+              <Input
+                ref={inputRef}
+                className="max-w-sm"
+                value={listName}
+                onChange={(e) => setListName(e.target.value)}
+              />
 
-        <button
-          className="bg-red-500 text-white px-3 py-1 rounded cursor-pointer"
+              <Button
+                type="submit"
+                disabled={updateList.isPending}
+                className="text-sm"
+              >
+                Save
+              </Button>
+
+              <Button
+                type="button"
+                className="bg-gray-500 hover:bg-gray-600 text-sm"
+                onClick={() => {
+                  setListName(list.name);
+                  setIsEditing(false);
+                }}
+              >
+                Cancel
+              </Button>
+            </form>
+          ) : (
+            <>
+              <h1 className="text-2xl font-semibold">
+                {formatName(list.name)}
+              </h1>
+
+              <Button
+                type="button"
+                className="text-sm px-1 py-0"
+                onClick={handleEdit}
+              >
+                Edit
+              </Button>
+            </>
+          )}
+        </div>
+        <Button
+          type="button"
+          className="bg-red-500 px-3 py-1 text-sm"
           onClick={handleDeleteList}
         >
           Delete List
-        </button>
+        </Button>
       </div>
 
       <p className="text-sm text-gray-500">Created at: {formattedDate}</p>
@@ -124,20 +215,20 @@ export default function ListDetailPage() {
         <h2 className="font-medium mb-2">Tasks</h2>
 
         <form onSubmit={handleCreateTask} className="mb-3 flex gap-2">
-          <input
+          <Input
             className="border p-2 flex-1"
             placeholder="New task..."
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
 
-          <button
+          <Button
             type="submit"
-            className="bg-blue-500 text-white px-3 rounded cursor-pointer"
-            disabled={createTask.isPending || !title.trim()}
+            className="px-3 text-sm"
+            disabled={createTask.isPending}
           >
             Create task
-          </button>
+          </Button>
         </form>
 
         <div className="min-h-50">
@@ -149,68 +240,15 @@ export default function ListDetailPage() {
                 const isDimmed =
                   task.isCompleted && filters.isCompleted !== true;
 
-                const due = getDueDateLabel(task.dueDate);
                 return (
-                  <li
+                  <TaskListItem
                     key={task.id}
-                    onClick={() => navigate(`/list/${listId}/task/${task.id}`)}
-                    className={`border p-2 rounded flex flex-1 justify-between items-center 
-                      mb-1 hover:bg-blue-100 cursor-pointer
-                      ${isDimmed ? " opacity-60" : ""}  
-                    `}
-                  >
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <button
-                        type="button"
-                        onClick={(e) => handleToggle(e, task)}
-                        className={`
-                            w-4 h-4 rounded border flex items-center justify-center
-                            cursor-pointer shrink-0
-                            ${
-                              task.isCompleted
-                                ? "bg-green-500 border-green-500"
-                                : "border-gray-400 hover:bg-green-200"
-                            }
-                          `}
-                      >
-                        {task.isCompleted && (
-                          <span className="text-white text-[10px]">✓</span>
-                        )}
-                      </button>
-
-                      <span className={`truncate`}>
-                        {formatName(task.title)}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={`text-xs px-2 py-1 rounded font-medium ${priorityStyles[task.priority]}`}
-                      >
-                        {task.priority}
-                      </span>
-
-                      {due && (
-                        <span
-                          className={`text-xs px-2 py-1 rounded
-                            ${due.isOverdue ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-600"}  
-                          `}
-                        >
-                          {due.label}
-                        </span>
-                      )}
-
-                      <button
-                        className="
-                          text-red-500 border rounded px-1 font-medium text-sm cursor-pointer
-                          hover:bg-red-100
-                        "
-                        onClick={(e) => handleDeleteTask(e, task.id)}
-                      >
-                        X
-                      </button>
-                    </div>
-                  </li>
+                    task={task}
+                    listId={listId}
+                    isDimmed={isDimmed}
+                    handleToggle={handleToggle}
+                    handleDelete={handleDeleteTask}
+                  />
                 );
               })}
             </ul>

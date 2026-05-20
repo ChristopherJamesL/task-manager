@@ -1,11 +1,18 @@
+import { forwardRef } from "react";
 import type { InputHTMLAttributes } from "react";
+import { twMerge } from "tailwind-merge";
 
 export type InputProps = InputHTMLAttributes<HTMLInputElement>;
 
-export default function Input({ className = "", ...props }: InputProps) {
+function Input(
+  { className = "", ...props }: InputProps,
+  ref: React.ForwardedRef<HTMLInputElement>,
+) {
   return (
     <input
-      className={`
+      ref={ref}
+      className={twMerge(
+        `
         w-full
         rounded        
         border
@@ -22,10 +29,12 @@ export default function Input({ className = "", ...props }: InputProps) {
 
         disabled:opacity-50
         disabled:cursor-not-allowed
-
-        ${className}
-     `}
+      `,
+        className,
+      )}
       {...props}
     />
   );
 }
+
+export default forwardRef(Input);

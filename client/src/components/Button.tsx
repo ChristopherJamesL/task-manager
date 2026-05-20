@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes } from "react";
+import { twMerge } from "tailwind-merge";
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement>;
 
@@ -11,7 +12,8 @@ export default function Button({
   return (
     <button
       type={type}
-      className={`
+      className={twMerge(
+        `
         inline-flex
         items-center
         justify-center
@@ -35,9 +37,9 @@ export default function Button({
         focus:ring-2
         focus:ring-blue-500
         focus:ring-offset-2
-        
-        ${className}
-      `}
+      `,
+        className,
+      )}
       {...props}
     >
       {children}
