@@ -32,7 +32,7 @@ export default function CreateListForm({
       />
 
       <Button
-        className="w-auto shrink-0 px-4 bg-blue-400 hover:bg-blue-600"
+        className="w-auto shrink-0 px-4 text-sm"
         type="submit"
         disabled={isPending}
       >

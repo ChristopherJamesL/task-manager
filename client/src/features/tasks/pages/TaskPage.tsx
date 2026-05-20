@@ -9,6 +9,7 @@ import type { TaskPriority } from "../types/task.types";
 import { formatDateTimeLocal } from "../../../utils/formatDateTimeLocal";
 
 export default function TaskPage() {
+  const [hasInitialized, setHasInitialized] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
@@ -22,7 +23,7 @@ export default function TaskPage() {
   const updateTask = useUpdateTaskMutation();
 
   useEffect(() => {
-    if (!task) return;
+    if (!task || hasInitialized) return;
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setTitle(task.title);
@@ -30,7 +31,9 @@ export default function TaskPage() {
     setIsCompleted(task.isCompleted);
     setPriority(task.priority);
     setDueDate(task.dueDate ? formatDateTimeLocal(task.dueDate) : "");
-  }, [task?.id]);
+
+    setHasInitialized(true);
+  }, [task, hasInitialized]);
 
   if (isLoading) return <div>Loading task...</div>;
   if (isError) return <div>Failed to load task</div>;

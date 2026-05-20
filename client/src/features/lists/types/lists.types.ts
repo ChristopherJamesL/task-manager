@@ -10,8 +10,8 @@ export type DeletedList = {
 };
 
 export type UpdateListProps = {
-  listId: ListIdProps;
-  name: CreateListProps;
+  listId: number;
+  name: string;
 };
 
 export type CreateListProps = {
