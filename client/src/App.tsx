@@ -24,7 +24,7 @@ export default function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/lists" element={<ListsPage />} />
             <Route path="/lists/:id" element={<ListDetailPage />} />
-            <Route path="/list/:listId/task/:taskId" element={<TaskPage />} />
+            <Route path="/tasks/:taskId" element={<TaskPage />} />
             <Route path="/tasks" element={<TasksPage />} />
           </Route>
         </Routes>

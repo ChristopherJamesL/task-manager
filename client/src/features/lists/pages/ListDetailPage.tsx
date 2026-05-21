@@ -1,27 +1,17 @@
 import { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useListQuery } from "../queries/useListQuery";
-import { useTasksQuery } from "../../tasks/queries/useTasksQuery";
 import { useUpdateListMutation } from "../queries/useUpdateListMutation";
 import { useDeleteListMutation } from "../queries/useDeleteListMutation";
-import { useCreateTaskMutation } from "../../tasks/queries/useCreateTaskMutation";
-import { useUpdateTaskMutation } from "../../tasks/queries/useUpdateTaskMutation";
-import { useDeleteTaskMutation } from "../../tasks/queries/useDeleteTaskMutation";
-import { useTaskFilters } from "../../tasks/hooks/useTaskFilters";
+import { useTasksController } from "../../tasks/hooks/useTasksController";
 import { formatName } from "../../../utils/format";
-import TaskListItem from "../../tasks/components/TaskListItem";
-import TaskFilters from "../../tasks/components/TaskFilters";
+import TaskSection from "../../tasks/components/TaskSection";
 import Button from "../../../components/Button";
 import Input from "../../../components/Input";
-import type { Task } from "../../tasks/types/task.types";
 
 export default function ListDetailPage() {
-  const [title, setTitle] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [listName, setListName] = useState("");
-
-  const { filters, searchParams, toggleFilter, setSort, resetFilters } =
-    useTaskFilters();
 
   const navigate = useNavigate();
 
@@ -30,10 +20,7 @@ export default function ListDetailPage() {
   const { id } = useParams();
   const listId = Number(id);
 
-  const createTask = useCreateTaskMutation();
-  const updateTask = useUpdateTaskMutation();
   const deleteList = useDeleteListMutation();
-  const deleteTask = useDeleteTaskMutation();
   const updateList = useUpdateListMutation();
 
   const {
@@ -43,26 +30,20 @@ export default function ListDetailPage() {
   } = useListQuery(listId);
 
   const {
-    data: tasks,
+    tasks,
     isLoading: tasksLoading,
     isError: tasksError,
-  } = useTasksQuery({ listId, ...filters });
 
-  const handleCreateTask = (e: React.FormEvent) => {
-    e.preventDefault();
+    filters,
+    searchParams,
+    toggleFilter,
+    setSort,
+    resetFilters,
 
-    if (!title.trim()) return;
-
-    createTask.mutate(
-      {
-        title,
-        listId,
-      },
-      {
-        onSuccess: () => setTitle(""),
-      },
-    );
-  };
+    handleCreateTask,
+    handleToggleTaskComplete,
+    handleDeleteTask,
+  } = useTasksController({ listId });
 
   const handleUpdateList = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -90,28 +71,6 @@ export default function ListDetailPage() {
     deleteList.mutate(listId, {
       onSuccess: () => {
         navigate("/lists");
-      },
-    });
-  };
-
-  const handleDeleteTask = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    taskId: number,
-  ) => {
-    e.stopPropagation();
-
-    if (!window.confirm("Delete this task?")) return;
-
-    deleteTask.mutate(taskId);
-  };
-
-  const handleToggle = (e: React.MouseEvent<HTMLButtonElement>, task: Task) => {
-    e.stopPropagation();
-
-    updateTask.mutate({
-      id: task.id,
-      data: {
-        isCompleted: !task.isCompleted,
       },
     });
   };
@@ -203,58 +162,17 @@ export default function ListDetailPage() {
 
       <p className="text-sm text-gray-500">Created at: {formattedDate}</p>
 
-      <TaskFilters
+      <TaskSection
+        tasks={tasks}
         filters={filters}
         searchParams={searchParams}
         toggleFilter={toggleFilter}
         setSort={setSort}
         resetFilters={resetFilters}
+        handleToggleTaskComplete={handleToggleTaskComplete}
+        handleCreateTask={handleCreateTask}
+        handleDeleteTask={handleDeleteTask}
       />
-
-      <div className="mt-6">
-        <h2 className="font-medium mb-2">Tasks</h2>
-
-        <form onSubmit={handleCreateTask} className="mb-3 flex gap-2">
-          <Input
-            className="border p-2 flex-1"
-            placeholder="New task..."
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-
-          <Button
-            type="submit"
-            className="px-3 text-sm"
-            disabled={createTask.isPending}
-          >
-            Create task
-          </Button>
-        </form>
-
-        <div className="min-h-50">
-          {tasks?.data?.tasks?.length === 0 ? (
-            <p>No tasks yet</p>
-          ) : (
-            <ul>
-              {tasks?.data?.tasks?.map((task) => {
-                const isDimmed =
-                  task.isCompleted && filters.isCompleted !== true;
-
-                return (
-                  <TaskListItem
-                    key={task.id}
-                    task={task}
-                    listId={listId}
-                    isDimmed={isDimmed}
-                    handleToggle={handleToggle}
-                    handleDelete={handleDeleteTask}
-                  />
-                );
-              })}
-            </ul>
-          )}
-        </div>
-      </div>
     </div>
   );
 }

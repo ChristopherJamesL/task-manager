@@ -1,4 +1,5 @@
-import type { TaskPriority, TaskFilterProps } from "../types/task.types";
+import type { TaskPriority } from "../types/task.types";
+import type { TaskFilterProps } from "../types/taskFilters.types";
 
 const completionFilters = [
   { label: "All", action: "reset" as const },
