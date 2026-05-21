@@ -25,7 +25,6 @@ export const taskService = {
 
   async createTask(data: CreateTask): Promise<Task> {
     const res = await httpCreateTask(data);
-    console.log(res);
 
     return res.data.task;
   },

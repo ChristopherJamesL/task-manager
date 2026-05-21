@@ -2,26 +2,13 @@ import { useNavigate } from "react-router";
 import { formatName } from "../../../utils/format";
 import { priorityStyles } from "../../../utils/priorityStyles";
 import { getDueDateLabel } from "../utils/getDueDateLabel";
-import type { Task } from "../types/task.types";
-
-type TaskListItemProps = {
-  task: Task;
-  listId: number;
-  isDimmed: boolean;
-
-  handleToggle: (e: React.MouseEvent<HTMLButtonElement>, task: Task) => void;
-  handleDelete: (
-    e: React.MouseEvent<HTMLButtonElement>,
-    taskId: number,
-  ) => void;
-};
+import type { TaskListItemProps } from "../types/task.types";
 
 export default function TaskListItem({
   task,
-  listId,
   isDimmed,
-  handleToggle,
-  handleDelete,
+  handleToggleTaskComplete,
+  handleDeleteTask,
 }: TaskListItemProps) {
   const navigate = useNavigate();
 
@@ -29,7 +16,7 @@ export default function TaskListItem({
   return (
     <li
       key={task.id}
-      onClick={() => navigate(`/list/${listId}/task/${task.id}`)}
+      onClick={() => navigate(`/tasks/${task.id}`)}
       className={`border p-2 rounded flex flex-1 justify-between items-center 
             mb-1 hover:bg-blue-100 cursor-pointer
             ${isDimmed ? " opacity-60" : ""}  
@@ -40,7 +27,10 @@ export default function TaskListItem({
           type="button"
           role="checkbox"
           aria-checked={task.isCompleted}
-          onClick={(e) => handleToggle(e, task)}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleToggleTaskComplete(task);
+          }}
           className={`
                 w-4 h-4 border rounded flex items-center justify-center
                 shrink-0 cursor-pointer
@@ -81,7 +71,10 @@ export default function TaskListItem({
                 text-red-500 border rounded px-1 font-medium text-sm cursor-pointer
                 hover:bg-red-100
             "
-          onClick={(e) => handleDelete(e, task.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDeleteTask(task.id);
+          }}
         >
           X
         </button>

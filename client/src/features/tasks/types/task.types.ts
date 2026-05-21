@@ -14,17 +14,12 @@ export type Task = {
   createdAt: string;
 };
 
-export type TaskFilterProps = {
-  filters: {
-    isCompleted?: boolean;
-    priority?: TaskPriority;
-    sortBy?: SortBy;
-    order?: Order;
-  };
-
-  searchParams: URLSearchParams;
-
-  toggleFilter: (key: string, value: string) => void;
-  setSort: (value: SortBy) => void;
-  resetFilters: () => void;
+export type TaskActionHandlers = {
+  handleToggleTaskComplete: (task: Task) => void;
+  handleDeleteTask: (taskId: number) => void;
 };
+
+export type TaskListItemProps = {
+  task: Task;
+  isDimmed: boolean;
+} & TaskActionHandlers;
