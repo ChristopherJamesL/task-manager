@@ -1,3 +1,4 @@
+import type { PaginatedMeta } from "../../../types/api.types";
 import type {
   SortBy,
   Order,
@@ -28,7 +29,12 @@ export type TaskSectionProps = {
   tasks: Task[];
   filters: TaskFiltersState;
   searchParams: URLSearchParams;
+  createTaskError: string | null;
 
-  handleCreateTask: (title: string) => void;
+  hasNextPage: PaginatedMeta["hasNextPage"];
+  isFetchingNextPage: boolean;
+  handleLoadMore: () => Promise<unknown>;
+
+  handleCreateTask: (title: string, overrideListId?: number) => void;
 } & TaskFilterActions &
   TaskActionHandlers;

@@ -47,7 +47,7 @@ async function getAllTasks(userId, listId, filters = {}, cursor, limit) {
     paramIndex += 2;
   }
 
-  dataParams.push(limit);
+  dataParams.push(limit + 1);
 
   const dataQuery = `
     SELECT *
@@ -62,8 +62,13 @@ async function getAllTasks(userId, listId, filters = {}, cursor, limit) {
     dataParams,
   });
 
+  const hasNextPage = rows.length > limit;
+
+  const tasks = hasNextPage ? rows.slice(0, limit) : rows;
+
   return {
-    tasks: rows,
+    tasks,
+    hasNextPage,
   };
 }
 

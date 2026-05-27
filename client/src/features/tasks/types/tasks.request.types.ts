@@ -16,7 +16,7 @@ export type GetTaskParams = {
 export type CreateTask = {
   title: string;
   description?: string;
-  listId?: number;
+  listId: number;
   priority?: TaskPriority;
   dueDate?: string;
 };

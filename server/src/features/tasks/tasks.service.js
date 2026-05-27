@@ -29,7 +29,7 @@ async function getAllTasks({
       ? { value: cursorValue, id: cursorId }
       : null;
 
-  const { tasks } = await getAllTasksModel(
+  const { tasks, hasNextPage } = await getAllTasksModel(
     userId,
     listId,
     { priority, isCompleted, dueBefore, dueAfter, sortBy, order },
@@ -54,7 +54,7 @@ async function getAllTasks({
     tasks: mappedTasks,
     meta: {
       nextCursor,
-      hasNextPage: tasks.length === limitValue,
+      hasNextPage,
     },
   };
 }

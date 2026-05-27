@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useCreateTaskMutation } from "../queries/useCreateTaskMutation";
 import { useDeleteTaskMutation } from "../queries/useDeleteTaskMutation";
 import { useTasksQuery } from "../queries/useTasksQuery";
@@ -12,6 +13,11 @@ import type {
 export function useTasksController({
   listId,
 }: UseTasksControllerProps): UseTasksControllerReturn {
+  const [createTaskError, setCreateTaskError] = useState<string | null>(null);
+  // const [cursor, setCursor] = useState<{ id: number; value: string } | null>(
+  //   null,
+  // );
+
   const { filters, searchParams, toggleFilter, setSort, resetFilters } =
     useTaskFilters();
 
@@ -19,21 +25,37 @@ export function useTasksController({
     data: tasks,
     isLoading,
     isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
   } = useTasksQuery({
     ...(listId !== undefined && { listId }),
     ...filters,
+    // cursorId: cursor?.id,
+    // cursorValue: cursor?.value,
   });
 
   const createTask = useCreateTaskMutation();
   const deleteTask = useDeleteTaskMutation();
   const updateTask = useUpdateTaskMutation();
 
-  const handleCreateTask = (title: string) => {
+  const handleCreateTask = (title: string, selectedListId?: number) => {
+    const finalListId = selectedListId ?? listId;
+
     if (!title.trim()) return;
+
+    if (!finalListId) {
+      setCreateTaskError(
+        "Please select a list from the dropdown menu above before creating a task",
+      );
+      return;
+    }
+
+    setCreateTaskError(null);
 
     createTask.mutate({
       title,
-      listId,
+      listId: finalListId,
     });
   };
 
@@ -53,11 +75,22 @@ export function useTasksController({
     deleteTask.mutate(taskId);
   };
 
+  // const handleLoadMore = () => {
+  //   if (!hasNextPage) return;
+
+  //   fetchNextPage();
+  // };
+
   return {
-    tasks: tasks?.data?.tasks ?? [],
-    rawTasks: tasks,
+    tasks: tasks?.pages.flatMap((page) => page.data.tasks) ?? [],
+
     isLoading,
     isError,
+    createTaskError,
+
+    // nextCursor: tasks?.pages[tasks.pages.length - 1]?.meta.nextCursor ?? null,
+    // hasNextPage:
+    //   tasks?.pages[tasks.pages.length - 1]?.meta.hasNextPage ?? false,
 
     filters,
     searchParams,
@@ -68,5 +101,10 @@ export function useTasksController({
     handleCreateTask,
     handleToggleTaskComplete,
     handleDeleteTask,
+
+    // handleLoadMore,
+    handleLoadMore: fetchNextPage,
+    hasNextPage: hasNextPage ?? false,
+    isFetchingNextPage,
   };
 }

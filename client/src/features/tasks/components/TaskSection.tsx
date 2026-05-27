@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useIntersectionObserver } from "../hooks/useIntersectionObserver";
 import TaskListItem from "../../tasks/components/TaskListItem";
 import TaskFilters from "../../tasks/components/TaskFilters";
 import Button from "../../../components/Button";
@@ -9,6 +10,10 @@ export default function TaskSection({
   tasks,
   filters,
   searchParams,
+  createTaskError,
+  hasNextPage,
+  isFetchingNextPage,
+  handleLoadMore,
   toggleFilter,
   setSort,
   resetFilters,
@@ -16,7 +21,18 @@ export default function TaskSection({
   handleCreateTask,
   handleDeleteTask,
 }: TaskSectionProps) {
+  console.log("Tasks from Task Section component: ", tasks);
   const [input, setInput] = useState("");
+
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useIntersectionObserver({
+    target: loadMoreRef,
+    enabled: hasNextPage && !isFetchingNextPage,
+    onIntersect: () => {
+      handleLoadMore();
+    },
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,26 +69,45 @@ export default function TaskSection({
           </Button>
         </form>
 
+        {createTaskError && (
+          <p className="mb-3 text-sm text-red-600">{createTaskError}</p>
+        )}
+
         <div className="min-h-50">
           {tasks?.length === 0 ? (
             <p>No tasks yet</p>
           ) : (
-            <ul>
-              {tasks?.map((task) => {
-                const isDimmed =
-                  task.isCompleted && filters.isCompleted !== true;
+            <>
+              <ul>
+                {tasks?.map((task) => {
+                  const isDimmed =
+                    task.isCompleted && filters.isCompleted !== true;
 
-                return (
-                  <TaskListItem
-                    key={task.id}
-                    task={task}
-                    isDimmed={isDimmed}
-                    handleToggleTaskComplete={handleToggleTaskComplete}
-                    handleDeleteTask={handleDeleteTask}
-                  />
-                );
-              })}
-            </ul>
+                  return (
+                    <TaskListItem
+                      key={task.id}
+                      task={task}
+                      isDimmed={isDimmed}
+                      handleToggleTaskComplete={handleToggleTaskComplete}
+                      handleDeleteTask={handleDeleteTask}
+                    />
+                  );
+                })}
+              </ul>
+
+              <div
+                ref={loadMoreRef}
+                className="h-10 flex items-center justify-center"
+              >
+                {isFetchingNextPage && (
+                  <p className="text-sm text-gray-500">Loading more tasks...</p>
+                )}
+
+                {!hasNextPage && tasks.length > 0 && (
+                  <p className="text-sm text-gray-400">No more tasks</p>
+                )}
+              </div>
+            </>
           )}
         </div>
       </div>
