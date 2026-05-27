@@ -31,8 +31,14 @@ export default function ListDetailPage() {
 
   const {
     tasks,
+
     isLoading: tasksLoading,
     isError: tasksError,
+    createTaskError,
+
+    hasNextPage,
+    isFetchingNextPage,
+    handleLoadMore,
 
     filters,
     searchParams,
@@ -166,6 +172,10 @@ export default function ListDetailPage() {
         tasks={tasks}
         filters={filters}
         searchParams={searchParams}
+        createTaskError={createTaskError}
+        hasNextPage={hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+        handleLoadMore={handleLoadMore}
         toggleFilter={toggleFilter}
         setSort={setSort}
         resetFilters={resetFilters}

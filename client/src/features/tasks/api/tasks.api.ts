@@ -12,6 +12,7 @@ export const httpGetTasks = async (
   const response = await apiClient.get("/tasks", {
     params,
   });
+  console.log("tasks from tasks api: ", response.data);
   return response.data;
 };
 

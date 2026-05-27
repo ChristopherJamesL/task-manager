@@ -16,7 +16,8 @@ export default function Select({
           rounded
           border-gray-300
           px-3
-          py-2
+          py-2     
+               
 
           bg-white
 
