@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useListQuery } from "../queries/useListQuery";
 import { useUpdateListMutation } from "../queries/useUpdateListMutation";
@@ -51,6 +51,10 @@ export default function ListDetailPage() {
     handleDeleteTask,
   } = useTasksController({ listId });
 
+  useEffect(() => {
+    if (isEditing) inputRef.current?.focus();
+  }, [isEditing]);
+
   const handleUpdateList = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -86,10 +90,6 @@ export default function ListDetailPage() {
 
     setListName(list.name);
     setIsEditing(true);
-
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 0);
   };
 
   const handleKeyDownEscape = (e: React.KeyboardEvent) => {

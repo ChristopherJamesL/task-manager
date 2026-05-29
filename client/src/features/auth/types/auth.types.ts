@@ -32,9 +32,3 @@ export type RegisterResponse = ApiResponse<UserPayload>;
 export type MeResponse = ApiResponse<UserPayload>;
 
 export type LogoutResponse = ApiResponse<LogoutPayload>;
-
-// export type ApiError = {
-//   error: {
-//     message: string;
-//   };
-// };

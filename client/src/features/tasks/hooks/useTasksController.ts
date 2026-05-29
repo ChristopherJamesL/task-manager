@@ -14,9 +14,6 @@ export function useTasksController({
   listId,
 }: UseTasksControllerProps): UseTasksControllerReturn {
   const [createTaskError, setCreateTaskError] = useState<string | null>(null);
-  // const [cursor, setCursor] = useState<{ id: number; value: string } | null>(
-  //   null,
-  // );
 
   const { filters, searchParams, toggleFilter, setSort, resetFilters } =
     useTaskFilters();
@@ -31,8 +28,6 @@ export function useTasksController({
   } = useTasksQuery({
     ...(listId !== undefined && { listId }),
     ...filters,
-    // cursorId: cursor?.id,
-    // cursorValue: cursor?.value,
   });
 
   const createTask = useCreateTaskMutation();
@@ -75,22 +70,12 @@ export function useTasksController({
     deleteTask.mutate(taskId);
   };
 
-  // const handleLoadMore = () => {
-  //   if (!hasNextPage) return;
-
-  //   fetchNextPage();
-  // };
-
   return {
     tasks: tasks?.pages.flatMap((page) => page.data.tasks) ?? [],
 
     isLoading,
     isError,
     createTaskError,
-
-    // nextCursor: tasks?.pages[tasks.pages.length - 1]?.meta.nextCursor ?? null,
-    // hasNextPage:
-    //   tasks?.pages[tasks.pages.length - 1]?.meta.hasNextPage ?? false,
 
     filters,
     searchParams,
@@ -102,7 +87,6 @@ export function useTasksController({
     handleToggleTaskComplete,
     handleDeleteTask,
 
-    // handleLoadMore,
     handleLoadMore: fetchNextPage,
     hasNextPage: hasNextPage ?? false,
     isFetchingNextPage,

@@ -10,7 +10,7 @@ A full-stack task management application built with Node.js, Express, PostgreSQL
 
 - React
 - TypeScript
-- React Query (TanStack Query) *(in progress)*
+- TanStack Query (React Query)
 - TailwindCSS
 
 ### Backend
@@ -28,6 +28,19 @@ A full-stack task management application built with Node.js, Express, PostgreSQL
 
 ---
 
+## 🏗️ Design Goals
+
+This project focuses on production-oriented full-stack application patterns:
+
+- Feature-based modular architecture
+- Clear separation of concerns across backend layers
+- Scalable server-state management with TanStack Query
+- Efficient cursor-based pagination for large task datasets
+- Session-based authentication with Redis-backed persistence
+- Integration-focused API testing
+
+---
+
 ## ✨ Features
 
 - User authentication (register, login, logout)
@@ -39,6 +52,7 @@ A full-stack task management application built with Node.js, Express, PostgreSQL
   - Filtering (priority, completion, date range)
   - Sorting (created date, due date)
   - Cursor-based pagination (efficient + scalable)
+  - Infinite scrolling task lists using cursor-based pagination
 - Rate limiting for login attempts (Redis-backed)
 - Full integration test coverage for core API flows
 
@@ -51,16 +65,35 @@ root/
 ├── client/ 
 │    └── src/
 │       ├── features/
-│       │   └── auth/
-│       │       ├── pages/
+│       │   ├── auth/
+│       │   │   ├── api/
+│       │   │   ├── pages/
+│       │   │   ├── components/
+│       │   │   ├── hooks/
+│       │   │   ├── queries/
+│       │   │   └── types/
+│       │   │
+│       │   ├── lists/
+│       │   │   ├── api/
+│       │   │   ├── pages/
+│       │   │   ├── components/
+│       │   │   ├── hooks/
+│       │   │   ├── queries/
+│       │   │   └── types/
+│       │   │
+│       │   └── tasks/
 │       │       ├── api/
+│       │       ├── pages/
+│       │       ├── components/
+│       │       ├── hooks/
 │       │       ├── queries/
-│       │       └── components/
+│       │       └── types/
+│       │
 │       ├── components/         # shared UI (Button, Input, Layout)
 │       ├── api/client/         # axios instance
 │       ├── routes/             # route guards (ProtectedRoute, etc...)
 │       ├── App.tsx
-│       └── main.tsx            # React frontend (auth + UI in progress)
+│       └── main.tsx            # React application entry point
 ├── server/
 │   ├── src/
 │   │   ├── db/                 # PostgreSQL + Redis clients
@@ -99,6 +132,8 @@ Located in `/client`
 
 - Feature-based frontend architecture (auth module isolated under `/features`)
 - Server state managed with TanStack Query (React Query)
+- Infinite queries with cursor-based pagination using TanStack Query
+- Intersection Observer-based lazy loading for task pagination
 - Authentication via HTTP-only cookies (no client-side tokens)
 - Client uses credentials: "include" for authenticated requests.
 - Clear separation of:
