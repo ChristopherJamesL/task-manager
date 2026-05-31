@@ -27,9 +27,14 @@ const {
 async function httpGetAllTasks(req, res) {
   const userId = req.user.userId;
 
+  console.log("➡️ REQUEST CURSOR:", res.locals.validatedQuery);
+
   const result = await getAllTasks({ userId, ...res.locals.validatedQuery });
 
-  console.log("get all tasks result: ", result);
+  console.log("⬅️ RESPONSE LAST TASK:", {
+    lastTaskId: result.tasks[result.tasks.length - 1]?.id,
+    nextCursor: result.meta.nextCursor,
+  });
 
   return sendSuccess(res, {
     data: {
@@ -68,8 +73,6 @@ async function httpUpdateTask(req, res) {
   const updates = req.body;
 
   const result = await updateTask({ userId, id, updates });
-
-  console.log("update task result: ", result);
 
   return sendSuccess(res, {
     data: result,

@@ -21,7 +21,6 @@ export default function TaskSection({
   handleCreateTask,
   handleDeleteTask,
 }: TaskSectionProps) {
-  console.log("Tasks from Task Section component: ", tasks);
   const [input, setInput] = useState("");
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);

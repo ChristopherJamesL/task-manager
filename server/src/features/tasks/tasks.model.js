@@ -9,6 +9,8 @@ async function getAllTasks(userId, listId, filters = {}, cursor, limit) {
   const orderBy = `${sortColumn} ${direction}, id ${direction}`;
   const operator = order === "asc" ? ">" : "<";
 
+  console.log("ORDER BY STRING: ", orderBy);
+
   let paramIndex = listId ? 3 : 2;
 
   let dataWhere = listId
@@ -39,13 +41,40 @@ async function getAllTasks(userId, listId, filters = {}, cursor, limit) {
     dataParams.push(dueAfter);
   }
 
+  console.log("========== CURSOR INPUT ==========");
+  console.log({
+    cursorValue: cursor?.value,
+    cursorId: cursor?.id,
+    cursorValueType: typeof cursor?.value,
+    isDate: cursor?.value instanceof Date,
+  });
+
   // Cursor-based pagination using (sortColumn, id) to ensure stable ordering
+
   if (cursor?.value && cursor?.id) {
     dataWhere += ` AND (${sortColumn}, id) ${operator} ($${paramIndex}, $${paramIndex + 1})`;
     dataParams.push(cursor.value);
     dataParams.push(cursor.id);
     paramIndex += 2;
   }
+
+  // if (cursor?.value && cursor?.id) {
+  //   if (order === "asc") {
+  //     dataWhere += ` AND (
+  //     ${sortColumn} > $${paramIndex}
+  //     OR (${sortColumn} = $${paramIndex} AND id > $${paramIndex + 1})
+  //   )`;
+  //   } else {
+  //     dataWhere += ` AND (
+  //     ${sortColumn} < $${paramIndex}
+  //     OR (${sortColumn} = $${paramIndex} AND id < $${paramIndex + 1})
+  //   )`;
+  //   }
+
+  //   dataParams.push(cursor.value);
+  //   dataParams.push(cursor.id);
+  //   paramIndex += 2;
+  // }
 
   dataParams.push(limit + 1);
 
@@ -57,14 +86,42 @@ async function getAllTasks(userId, listId, filters = {}, cursor, limit) {
     LIMIT $${dataParams.length}
   `;
 
+  console.log("========== FINAL SQL PARAMS ==========");
+  console.log({
+    query: dataQuery,
+    params: dataParams,
+    paramTypes: dataParams.map((p) => typeof p),
+  });
+
+  console.log("DATA QUERY: ", dataQuery);
+
   const { rows } = await paginate({
     dataQuery,
     dataParams,
   });
 
+  console.log("========== DB QUERY EXECUTION ==========");
+  console.log("SQL QUERY:\n", dataQuery);
+  console.log("PARAMS:\n", dataParams);
+  console.log("========================================");
+
+  console.log("========== DB RETURN ==========");
+  console.log(
+    rows.map((r) => ({
+      id: r.id,
+      created_at: r.created_at,
+      created_at_type: typeof r.created_at,
+    })),
+  );
+
   const hasNextPage = rows.length > limit;
 
   const tasks = hasNextPage ? rows.slice(0, limit) : rows;
+
+  console.log("📦 DB RAW LAST ROW:", rows[rows.length - 1]);
+
+  console.log("WHERE CLAUSE:", dataWhere);
+  console.log("PARAMS:", dataParams);
 
   return {
     tasks,
