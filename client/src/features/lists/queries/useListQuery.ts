@@ -6,5 +6,6 @@ export function useListQuery(listId: number) {
     queryKey: ["lists", listId],
     queryFn: () => listService.getListById(listId),
     enabled: !!listId,
+    staleTime: 1000 * 30,
   });
 }

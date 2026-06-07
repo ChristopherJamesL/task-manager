@@ -1,4 +1,5 @@
 const request = require("supertest");
+const { pool } = require("../setup/db");
 const createApp = require("../setup/app");
 const { createAuthenticatedUser } = require("../setup/authHelper");
 const { createTask, getAllTasks, updateTask } = require("../setup/tasksHelper");
@@ -92,7 +93,7 @@ describe("Tasks - Get All", () => {
     expect(response.statusCode).toBe(401);
   });
 
-  test("It should paginate tasks using cursor without duplicates", async () => {
+  test("It should paginate tasks using createdAt DESC without duplicates", async () => {
     const { agent } = await createAuthenticatedUser();
 
     const createListResponse = await createList({ name: "work", agent });
@@ -143,6 +144,109 @@ describe("Tasks - Get All", () => {
     const timestamps = combined.map((t) => new Date(t.created_at).getTime());
 
     const sorted = [...timestamps].sort((a, b) => b - a);
+
+    expect(timestamps).toEqual(sorted);
+  });
+
+  test("It should paginate correctly using createdAt ASC without duplicates", async () => {
+    const { agent } = await createAuthenticatedUser();
+
+    const createListResponse = await createList({ name: "work", agent });
+    const listId = createListResponse.body.data.list.id;
+
+    // create 5 tasks
+    for (let i = 0; i < 5; i++) {
+      await createTask({ taskData: createTaskData({ listId }), agent });
+    }
+
+    // page 1
+    const page1 = await getAllTasks({
+      query: { limit: 2, sortBy: "createdAt", order: "asc" },
+      agent,
+    });
+
+    expect(page1.body.data.tasks).toHaveLength(2);
+
+    const cursor = page1.body.meta.nextCursor;
+
+    //page 2
+    const page2 = await getAllTasks({
+      query: {
+        limit: 2,
+        sortBy: "createdAt",
+        order: "asc",
+        cursorValue: cursor.value,
+        cursorId: cursor.id,
+      },
+      agent,
+    });
+
+    expect(page2.body.data.tasks).toHaveLength(2);
+
+    const page1Ids = page1.body.data.tasks.map((t) => t.id);
+    const page2Ids = page2.body.data.tasks.map((t) => t.id);
+
+    const intersection = page1Ids.filter((id) => page2Ids.includes(id));
+    expect(intersection).toHaveLength(0);
+
+    // Ordering consistency check
+    const combined = [...page1.body.data.tasks, ...page2.body.data.tasks];
+
+    const timestamps = combined.map((t) => new Date(t.createdAt).getTime());
+    const sorted = [...timestamps].sort((a, b) => a - b);
+
+    expect(timestamps).toEqual(sorted);
+  });
+
+  test("It should paginate correctly using dueDate ASC without duplicates", async () => {
+    const { agent } = await createAuthenticatedUser();
+
+    const createListResponse = await createList({ name: "work", agent });
+    const listId = createListResponse.body.data.list.id;
+
+    // create tasks
+    for (let i = 0; i < 5; i++) {
+      const task = createTaskData({ listId });
+
+      // ensure some have due dates so sorting is meaningful
+      task.dueDate = new Date(Date.now() + i * 1000 * 60).toISOString();
+
+      await createTask({ taskData: task, agent });
+    }
+
+    const page1 = await getAllTasks({
+      query: { limit: 2, sortBy: "dueDate", order: "asc" },
+      agent,
+    });
+
+    expect(page1.body.data.tasks).toHaveLength(2);
+
+    const cursor = page1.body.meta.nextCursor;
+
+    const page2 = await getAllTasks({
+      query: {
+        limit: 2,
+        sortBy: "dueDate",
+        order: "asc",
+        cursorValue: cursor.value,
+        cursorId: cursor.id,
+      },
+      agent,
+    });
+
+    expect(page2.body.data.tasks).toHaveLength(2);
+
+    const page1Ids = page1.body.data.tasks.map((t) => t.id);
+    const page2Ids = page2.body.data.tasks.map((t) => t.id);
+
+    const intersection = page1Ids.filter((id) => page2Ids.includes(id));
+    expect(intersection).toHaveLength(0);
+
+    // Ordering consistency check
+    const combined = [...page1.body.data.tasks, ...page2.body.data.tasks];
+
+    const timestamps = combined.map((t) => new Date(t.dueDate).getTime());
+    const sorted = [...timestamps].sort((a, b) => a - b);
 
     expect(timestamps).toEqual(sorted);
   });

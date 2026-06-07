@@ -40,8 +40,8 @@ CREATE TABLE tasks (
 	description TEXT,
 	is_completed BOOLEAN DEFAULT FALSE,
 	priority VARCHAR(10) DEFAULT 'medium',
-	due_date TIMESTAMPTZ,
-	created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+	due_date TIMESTAMPTZ(3),
+	created_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP,
 
 	CONSTRAINT fk_tasks_user
 		FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,

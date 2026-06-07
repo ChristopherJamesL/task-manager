@@ -7,17 +7,12 @@ import Select from "../../../components/Select";
 
 export default function TasksPage() {
   const [selectedListId, setSelectedListId] = useState<number | undefined>();
-  console.log("selected list id: ", selectedListId);
 
   const {
     data: lists,
     isLoading: listsLoading,
     isError: listsError,
   } = useListsQuery();
-  console.log(
-    "lists: ",
-    lists?.map((list) => ({ name: list.name, id: list.id })),
-  );
 
   const {
     tasks,

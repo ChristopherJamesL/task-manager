@@ -6,7 +6,7 @@ const zodRequestQueryBoolean = (val) => {
 };
 
 const cursorId = z.coerce.number();
-const cursorValue = z.iso.datetime();
+const cursorValue = z.string().min(1);
 const description = z.string();
 const dueAfter = z.iso.datetime();
 const dueBefore = z.iso.datetime();

@@ -5,5 +5,7 @@ export function useListsQuery() {
   return useQuery({
     queryKey: ["lists"],
     queryFn: listService.getLists,
+    staleTime: 1000 * 60,
+    gcTime: 1000 * 60 * 10,
   });
 }

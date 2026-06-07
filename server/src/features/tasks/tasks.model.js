@@ -40,8 +40,9 @@ async function getAllTasks(userId, listId, filters = {}, cursor, limit) {
   }
 
   // Cursor-based pagination using (sortColumn, id) to ensure stable ordering
+
   if (cursor?.value && cursor?.id) {
-    dataWhere += ` AND (${sortColumn}, id) ${operator} ($${paramIndex}, $${paramIndex + 1})`;
+    dataWhere += ` AND (${sortColumn}, id) ${operator} ($${paramIndex}::timestamptz, $${paramIndex + 1})`;
     dataParams.push(cursor.value);
     dataParams.push(cursor.id);
     paramIndex += 2;
@@ -50,7 +51,7 @@ async function getAllTasks(userId, listId, filters = {}, cursor, limit) {
   dataParams.push(limit + 1);
 
   const dataQuery = `
-    SELECT *
+    SELECT *, created_at::text AS created_at_cursor, due_date::text AS due_date_cursor
     FROM tasks
     ${dataWhere}
     ORDER BY ${orderBy}

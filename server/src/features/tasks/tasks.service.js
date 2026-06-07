@@ -39,9 +39,14 @@ async function getAllTasks({
 
   const mappedTasks = tasks.map(mapTask);
 
-  const lastTask = tasks[tasks.length - 1];
+  const lastTask = mappedTasks[mappedTasks.length - 1];
 
-  const sortField = sortBy === "dueDate" ? "due_date" : "created_at";
+  const sortFieldMap = {
+    createdAt: "createdAtCursor",
+    dueDate: "dueDateCursor",
+  };
+
+  const sortField = sortFieldMap[sortBy] || "createdAtCursor";
 
   const nextCursor = lastTask
     ? {
