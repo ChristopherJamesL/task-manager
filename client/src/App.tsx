@@ -1,5 +1,4 @@
 import { Routes, Route } from "react-router";
-// import Navbar from "./components/layout/Navbar";
 import SigninPage from "./features/auth/pages/SignInPage";
 import RegisterPage from "./features/auth/pages/RegisterPage";
 import HomeRedirect from "./routes/HomeRedirect";

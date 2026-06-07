@@ -39,30 +39,21 @@ async function getAllTasks({
 
   const mappedTasks = tasks.map(mapTask);
 
-  const lastTask = tasks[tasks.length - 1];
+  const lastTask = mappedTasks[mappedTasks.length - 1];
 
-  console.log("DB created_at (raw):", lastTask.created_at);
-  console.log(
-    "DB created_at (ISO):",
-    new Date(lastTask.created_at).toISOString(),
-  );
+  const sortFieldMap = {
+    createdAt: "createdAtCursor",
+    dueDate: "dueDateCursor",
+  };
 
-  const sortField = sortBy === "dueDate" ? "due_date" : "created_at";
+  const sortField = sortFieldMap[sortBy] || "createdAtCursor";
 
   const nextCursor = lastTask
     ? {
-        value: lastTask[sortField].toISOString(),
+        value: lastTask[sortField],
         id: lastTask.id,
       }
     : null;
-
-  console.log(
-    "PAGE IDS:",
-    tasks.map((t) => t.id),
-  );
-
-  console.log("CURSOR IN:", cursor);
-  console.log("NEXT CURSOR:", nextCursor);
 
   return {
     tasks: mappedTasks,
