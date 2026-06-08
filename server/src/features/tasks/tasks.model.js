@@ -6,7 +6,10 @@ async function getAllTasks(userId, listId, filters = {}, cursor, limit) {
 
   const sortColumn = sortBy === "dueDate" ? "due_date" : "created_at";
   const direction = order === "asc" ? "ASC" : "DESC";
-  const orderBy = `${sortColumn} ${direction}, id ${direction}`;
+  const orderBy =
+    sortBy === "dueDate"
+      ? `COALESCE(due_date, 'infinity'::timestamptz) ${direction}, id ${direction}`
+      : `created_at ${direction}, id ${direction}`;
   const operator = order === "asc" ? ">" : "<";
 
   let paramIndex = listId ? 3 : 2;
@@ -40,9 +43,16 @@ async function getAllTasks(userId, listId, filters = {}, cursor, limit) {
   }
 
   // Cursor-based pagination using (sortColumn, id) to ensure stable ordering
+  if (cursor?.value !== undefined && cursor?.id !== undefined) {
+    if (sortBy === "dueDate") {
+      dataWhere += ` AND (
+        COALESCE(due_date, 'infinity'::timestamptz),
+        id
+      ) ${operator} ($${paramIndex}::timestamptz, $${paramIndex + 1})`;
+    } else {
+      dataWhere += ` AND (${sortColumn}, id) ${operator} ($${paramIndex}::timestamptz, $${paramIndex + 1})`;
+    }
 
-  if (cursor?.value && cursor?.id) {
-    dataWhere += ` AND (${sortColumn}, id) ${operator} ($${paramIndex}::timestamptz, $${paramIndex + 1})`;
     dataParams.push(cursor.value);
     dataParams.push(cursor.id);
     paramIndex += 2;

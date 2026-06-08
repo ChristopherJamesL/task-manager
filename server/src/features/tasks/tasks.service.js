@@ -25,8 +25,11 @@ async function getAllTasks({
 
   // Build cursor for pagination if provided
   const cursor =
-    cursorValue && cursorId !== undefined
-      ? { value: cursorValue, id: cursorId }
+    cursorValue !== undefined && cursorId !== undefined
+      ? {
+          value: cursorValue === "null" ? "infinity" : cursorValue,
+          id: cursorId,
+        }
       : null;
 
   const { tasks, hasNextPage } = await getAllTasksModel(
@@ -50,7 +53,7 @@ async function getAllTasks({
 
   const nextCursor = lastTask
     ? {
-        value: lastTask[sortField],
+        value: lastTask[sortField] === null ? "infinity" : lastTask[sortField],
         id: lastTask.id,
       }
     : null;

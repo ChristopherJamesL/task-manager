@@ -9,11 +9,14 @@ import type {
 export const httpGetTasks = async (
   params?: GetTaskParams,
 ): Promise<GetTasksResponse> => {
-  const response = await apiClient.get("/tasks", {
-    params,
-  });
+  const normalized = {
+    ...params,
+    cursorValue: params?.cursorValue === null ? "null" : params?.cursorValue,
+  };
 
-  console.log("Tasks response data: ", response.data);
+  const response = await apiClient.get("/tasks", {
+    params: normalized,
+  });
 
   return response.data;
 };
