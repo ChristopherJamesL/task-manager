@@ -29,3 +29,8 @@ export type UpdateTask = {
   dueDate?: string;
   isCompleted?: boolean;
 };
+
+export type TaskCursor = {
+  id: number;
+  value: string; // postgres timestamptz serialized as text
+} | null;
