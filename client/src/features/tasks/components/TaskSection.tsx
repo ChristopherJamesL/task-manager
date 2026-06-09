@@ -74,7 +74,9 @@ export default function TaskSection({
 
         <div className="min-h-50">
           {tasks?.length === 0 ? (
-            <p>No tasks yet</p>
+            <div className="border rounded p-6 text-center text-gray-500">
+              No tasks yet
+            </div>
           ) : (
             <>
               <ul>
