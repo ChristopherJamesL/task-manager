@@ -7,7 +7,6 @@ A full-stack task management application built with Node.js, Express, PostgreSQL
 ## 🌐 Live Demo
 
 - **Frontend (Vercel):** [Live Application](https://task-manager-eight-xi-87.vercel.app)  
-- **Backend (Render API):** [API Server](https://task-manager-3o27.onrender.com)
 
 ### Production Infrastructure
 
