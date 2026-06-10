@@ -4,6 +4,20 @@ A full-stack task management application built with Node.js, Express, PostgreSQL
 
 ---
 
+## 🌐 Live Demo
+
+- **Frontend (Vercel):** [Live Application](https://task-manager-eight-xi-87.vercel.app)  
+- **Backend (Render API):** [API Server](https://task-manager-3o27.onrender.com)
+
+### Production Infrastructure
+
+- Frontend: Vercel
+- Backend: Render
+- Database: Neon PostgreSQL
+- Session Storage & Rate Limiting: Upstash Redis
+
+---
+
 ## 🚀 Tech Stack
 
 ### Frontend
@@ -23,7 +37,7 @@ A full-stack task management application built with Node.js, Express, PostgreSQL
 ### Database / Infrastructure
 
 - PostgreSQL
-- Redis (rate limiting + caching)
+- Redis (sessions + rate limiting)
 - Docker (development environment)
 
 ---
@@ -36,14 +50,14 @@ This project focuses on production-oriented full-stack application patterns:
 - Clear separation of concerns across backend layers
 - Scalable server-state management with TanStack Query
 - Efficient cursor-based pagination for large task datasets
-- Session-based authentication with Redis-backed persistence
+- Session-based authentication with Redis-backed session storage
 - Integration-focused API testing
 
 ---
 
 ## ✨ Features
 
-- User authentication (register, login, logout)
+- User authentication (register, sign in, logout)
 - Session-based authentication with protected routes
 - User profile endpoint (`/api/auth/me`)
 - Task management (create, update, delete)
@@ -54,7 +68,7 @@ This project focuses on production-oriented full-stack application patterns:
   - Cursor-based pagination (efficient + scalable)
   - Infinite scrolling task lists using cursor-based pagination
 - Rate limiting for login attempts (Redis-backed)
-- Full integration test coverage for core API flows
+- Integration testing for core API flows
 
 ---
 
@@ -207,6 +221,8 @@ http://localhost:8000
 
 ## ⚙️ Running with Docker (Development)
 
+- Docker is used for local development only. Production deployment uses Vercel, Render, Neon PostgreSQL, and Upstash Redis.
+
 1. Make sure Docker Desktop is running.
 
 2. From the project root, build and start the containers:
@@ -219,7 +235,7 @@ This will start three services:
 
 - ``backend (Node.js app with nodemon)``
 - ``db (PostgreSQL)``
-- ``redis (Redis server, used for caching and rate limiting)``
+- ``Redis server, used for session storage and rate limiting``
 
 3. The backend API will be available at:
 
@@ -352,6 +368,8 @@ GitHub Actions pipeline:
 - API documentation (Swagger/OpenAPI)
 - Redis caching for frequently accessed data
 - Background jobs (task reminders, cleanup)
+- Custom domain and HTTPS configuration
+- Email verification and password reset flows
 
 ---
 
