@@ -51,8 +51,10 @@ export default function ListsPage() {
         </div>
       ) : (
         <ul className="space-y-3">
-          {lists?.map((list) => {
-            return <ListCard key={list.id} list={list} />;
+          {lists?.map((list, index) => {
+            return (
+              <ListCard key={list.id} list={list} listNumber={index + 1} />
+            );
           })}
         </ul>
       )}

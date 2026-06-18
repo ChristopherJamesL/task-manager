@@ -2,7 +2,13 @@ import { Link } from "react-router";
 import { formatName } from "../../../utils/format";
 import type { List } from "../types/lists.types";
 
-export default function ListCard({ list }: { list: List }) {
+export default function ListCard({
+  list,
+  listNumber,
+}: {
+  list: List;
+  listNumber: number;
+}) {
   return (
     <li>
       <Link
@@ -10,7 +16,7 @@ export default function ListCard({ list }: { list: List }) {
         to={`/lists/${list.id}`}
       >
         <div className="font-medium">{formatName(list.name)}</div>
-        <div>List #{list.id}</div>
+        <div>List #{listNumber}</div>
       </Link>
     </li>
   );
