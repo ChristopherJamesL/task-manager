@@ -27,7 +27,7 @@ export default function TaskFilters({
   const isAsc = filters.order === "asc";
 
   return (
-    <div className="flex gap-2 mt-2">
+    <div className="flex flex-wrap gap-2 mt-2">
       {completionFilters.map((filter) => {
         if (filter.action === "reset") {
           return (
