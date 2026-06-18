@@ -43,7 +43,7 @@ export default function TaskSection({
   };
 
   return (
-    <div className="min-w-2xl">
+    <div className="">
       <TaskFilters
         filters={filters}
         searchParams={searchParams}
