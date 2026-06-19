@@ -106,7 +106,8 @@ export default function ListDetailPage() {
   const formattedDate = new Date(list.createdAt).toLocaleString();
 
   return (
-    <div className="min-w-2xl">
+    // <div className="min-w-2xl">
+    <div className="">
       <div className="flex justify-between items-center gap-4">
         <div className="flex items-center gap-2 flex-1">
           {isEditing ? (
